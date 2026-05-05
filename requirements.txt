@@ -1,0 +1,19 @@
+# Core
+jira==3.10.5
+python-dotenv==1.0.1
+requests==2.32.4
+boto3==1.36.19
+botocore==1.36.26
+
+# GitHub — Fase 2 (monitor de CI)
+pygithub==2.1.1
+
+# Dev Pipeline Orchestrator
+python-statemachine>=2.3.0   # State machine
+rich>=13.7.0                  # Terminal UI (progress, tables, panels)
+questionary>=2.0.0            # Interactive prompts (confirm, select, checkbox)
+pydantic>=2.0.0               # Config validation + schema
+filelock>=3.13.0              # Prevenir concorrência em estado JSON
+psutil>=5.9.0                 # Validar se PID de lock antigo ainda existe
+pyyaml>=6.0                   # YAML parsing (skills runner)
+

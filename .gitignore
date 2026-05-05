@@ -1,0 +1,98 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Tickets (local data, don't commit) - LEGACY v1.x
+
+# Pipeline v2.1 working directories (local artifacts, don't commit)
+pipelines/stories/
+pipelines/tasks/
+!pipelines/stories/.gitkeep
+!pipelines/tasks/.gitkeep
+
+# Pipeline config
+# - `.pipeline-config.json` contém configurações locais/credenciais e NÃO deve ser commitado
+# - `.pipeline-config.example.json` deve ser commitado como template público
+.pipeline-config.json
+.pipeline-config.local.json
+
+# Phase 3 — pipeline state (estados salvos de pipelines ativos)
+.pipeline-state/*.json
+.pipeline-state/*.lock
+!.pipeline-state/.gitkeep
+
+# Pipeline state backups (temporary backups created during pipeline execution)
+.pipeline-state-backup-*/
+.pipeline-state/*-backup
+.pipeline-state/*.backup.json
+
+# Cursor plans (temporary planning files)
+.cursor/plans/*.plan.md
+
+# Logs
+*.log
+logs/*.log
+!logs/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+.temp/
+

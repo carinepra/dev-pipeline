@@ -1,0 +1,165 @@
+---
+description: Jira commands and workflow for Firebolt bug analysis
+---
+
+# Jira Commands Reference
+
+## Jira Project
+
+- **Project Key:** `HUB`
+- **Board:** Firebolt HUB
+- **Server:** https://redventures.atlassian.net
+
+## Common Commands
+
+### List Open Tickets
+
+```bash
+make list-tickets
+```
+
+Fetches all open HUB tickets updated in the last 30 days and creates/updates local directories:
+- `tickets/HUB/bug/HUB-XXXX/`
+- `tickets/HUB/feature/HUB-XXXX/`
+- `tickets/HUB/task/HUB-XXXX/`
+
+### Prepare Ticket for Analysis
+
+```bash
+make prepare-ticket TICKET=HUB-1234
+```
+
+Orchestrates:
+1. Sync ticket with Jira (fetch new comments, detect edits)
+2. Update `readme.md` with latest Jira data
+3. Extract CPFs from ticket content
+4. Print ticket summary and next action
+
+### Sync Ticket (Manual)
+
+```bash
+make sync-ticket TICKET=HUB-1234
+```
+
+Syncs ticket with Jira:
+- Pulls new comments since last sync
+- Groups human comments into `feedback-NN.md` files
+- Detects AI comments and saves as `analysis-NN.md`
+- Updates `state.json` with cycle status
+
+Options:
+- `--dry-run` - show what would be done without making changes
+- `--rebuild` - rebuild state.json from scratch (destructive)
+
+### Post Analysis to Jira
+
+```bash
+make post-analysis TICKET=HUB-1234
+```
+
+Posts pending analysis to Jira:
+- Converts Markdown to Jira wiki markup
+- Adds AI comment header ("🤖 Análise automatizada por IA")
+- Updates `state.json` status to `awaiting_feedback`
+
+Options:
+- `--dry-run` - preview Jira comment without posting
+
+### Post Resolution Comment
+
+```bash
+make post-resolution TICKET=HUB-1234
+```
+
+Posts `resolucao.md` to Jira as final resolution comment.
+
+Options:
+- `--file investigacao.md` - post different file
+- `--dry-run` - preview comment without posting
+
+## State Machine
+
+| Status | Description | Next Action |
+|--------|-------------|-------------|
+| `new` | First time analyzing ticket | Generate `analysis-01.md` |
+| `in_review` | Human feedback received | Generate `analysis-{N+1}.md` (re-evaluation) |
+| `awaiting_feedback` | Analysis posted, waiting for human | Wait for Jira comments |
+| `awaiting_jira` | Waiting for Jira status change | Check Jira status |
+| `resolved` | Ticket closed in Jira | No action needed |
+
+## Jira Status Mapping
+
+### Done Statuses
+- Complete
+- Done
+- Closed
+- Resolved
+- Concluído
+- Fechado
+- Resolvido
+
+### Waiting Statuses
+- Aprovado
+- Waiting for Business Approval
+- Teste
+- Ready for Testing
+- Ready for Deploy
+
+## AI Comment Detection
+
+Comments are detected as AI-generated if they contain:
+- "adicionado automaticamente por IA"
+- "análise automatizada por IA"
+- "comentário automático por IA"
+- "gerado por IA"
+- "🤖 análise automatizada por IA"
+- "🤖 reavaliação por IA"
+
+## Resolution Detection
+
+Comments are detected as resolution confirmations if they contain:
+- "pode ser fechado"
+- "foi corrigido"
+- "está resolvido"
+- "pode refaturar"
+- "tudo certo"
+- "aprovado"
+- "ticket resolvido"
+
+## File Structure
+
+```
+tickets/HUB/{category}/HUB-XXXX/
+├── readme.md               # Jira ticket data (auto-updated)
+├── state.json             # State machine status
+├── analysis-01.md         # First AI analysis
+├── feedback-01.md         # Human feedback (cycle 1)
+├── analysis-02.md         # Re-evaluation (cycle 2)
+├── feedback-02.md         # Human feedback (cycle 2)
+├── resolucao.md           # Final resolution (optional)
+└── history.txt            # Post history (optional)
+```
+
+## Makefile Commands
+
+| Command | Description |
+|---------|-------------|
+| `make list-tickets` | List open Jira tickets |
+| `make prepare-ticket TICKET=HUB-XXXX` | Prepare ticket for analysis |
+| `make sync-ticket TICKET=HUB-XXXX` | Sync ticket with Jira |
+| `make post-analysis TICKET=HUB-XXXX` | Post analysis to Jira |
+| `make post-resolution TICKET=HUB-XXXX` | Post resolution to Jira |
+
+## Best Practices
+
+1. **Always run `prepare-ticket` before analysis** - ensures fresh data
+2. **Check state.json status before generating analysis** - prevents conflicts
+3. **Never skip user approval before posting** - quality control
+4. **Use Markdown for local files** - converted to Jira wiki markup on post
+5. **Include data evidence in analyses** - DynamoDB queries, code snippets
+6. **Write in Portuguese** - team's working language
+
+## Related Files
+
+- [`.cursor/skills/skill-firebolt-bug-analysis/SKILL.md`](../skills/skill-firebolt-bug-analysis/SKILL.md) - Bug analysis workflow
+- [`docs/ciclo-resolucao.md`](../../docs/ciclo-resolucao.md) - State machine documentation

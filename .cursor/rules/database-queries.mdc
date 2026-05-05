@@ -1,0 +1,177 @@
+---
+description: DynamoDB query patterns and schema for Firebolt
+---
+
+# Firebolt DynamoDB Schema and Query Patterns
+
+## Table Information
+
+- **Table Name:** `onze-firebolt-main-dev` (dev), `onze-firebolt-main-prd` (prod)
+- **Region:** `sa-east-1`
+- **Primary Key:** `PK` (partition key) + `SK` (sort key)
+
+## Global Secondary Indexes (GSIs)
+
+| GSI Name | PK Attribute | SK Attribute | Purpose |
+|----------|--------------|--------------|---------|
+| `HIERARCHY` | `entity` | `HIERARCHYSK` | Query by entity type + hierarchy |
+| `STATUS` | `entity` | `STATUSSK` | Query by entity type + status |
+| `TIMESTAMP` | `entity` | `TIMESTAMPSK` | Query by entity type + timestamp |
+| `GSI1` | `GSI1PK` | `GSI1SK` | Query by custom index 1 (e.g., CPF + order) |
+| `GSI2` | `GSI2PK` | `GSI2SK` | Query by custom index 2 (e.g., company + user) |
+
+## Entity Key Patterns
+
+### Orders (Pedidos)
+
+```python
+# Order metadata
+PK = "ORD#{order_id}"
+SK = "METADATA"
+
+# Order items
+PK = "ORD#{order_id}"
+SK = "ITEM#{item_id}"
+
+# Query by CPF (GSI1)
+GSI1PK = "CPF#{cpf}"
+GSI1SK = "ORD#{order_id}"
+
+# Query by company (GSI2)
+GSI2PK = "COM#{company_id}"
+GSI2SK = "ORD#{order_id}"
+
+# Query by status (STATUS GSI)
+entity = "ORDER"
+STATUSSK = "{status}#{timestamp}"
+```
+
+### Companies (Empresas)
+
+```python
+# Company metadata
+PK = "COM#{company_id}"
+SK = "METADATA"
+
+# Company users
+PK = "COM#{company_id}"
+SK = "USER#{user_id}"
+
+# Company contracts
+PK = "COM#{company_id}"
+SK = "CONTRACT#{contract_id}"
+```
+
+### Users (Usuários)
+
+```python
+# User metadata
+PK = "USER#{user_id}"
+SK = "METADATA"
+
+# User orders (GSI1)
+GSI1PK = "USER#{user_id}"
+GSI1SK = "ORD#{order_id}"
+
+# User by CPF (scan required or GSI1)
+# Note: Use GSI1PK = "CPF#{cpf}" to find user
+```
+
+## Common Query Examples
+
+### 1. Get Order by ID
+
+```python
+from shared.dynamodb_utils.dynamodb import DynamoDBClient
+
+client = DynamoDBClient()
+order = client.get_item(pk="ORD#12345", sk="METADATA")
+```
+
+### 2. Get All Orders by CPF
+
+```python
+orders = client.query_by_gsi(
+    gsi_name="GSI1",
+    pk_attr="GSI1PK",
+    pk_value="CPF#12345678900",
+    sk_attr="GSI1SK",
+    sk_value="ORD#",  # Prefix filter
+    limit=100
+)
+```
+
+### 3. Get Company Data
+
+```python
+company = client.get_item(pk="COM#abcd1234", sk="METADATA")
+
+# Get all users in company
+users = client.query_by_pk(pk="COM#abcd1234", sk_prefix="USER#")
+
+# Get all contracts in company
+contracts = client.query_by_pk(pk="COM#abcd1234", sk_prefix="CONTRACT#")
+```
+
+### 4. Query Orders by Status
+
+```python
+from boto3.dynamodb.conditions import Key
+
+# Get all COMPLETED orders
+orders = client.query_by_gsi(
+    gsi_name="STATUS",
+    pk_attr="entity",
+    pk_value="ORDER",
+    sk_attr="STATUSSK",
+    sk_value="COMPLETED",  # Or use begins_with for status prefix
+    limit=50
+)
+```
+
+### 5. Scan for Specific CPF (Use Sparingly)
+
+```python
+from boto3.dynamodb.conditions import Attr
+
+# WARNING: Expensive operation, use only when GSI query not possible
+items = client.scan_with_filter(
+    filter_expression=Attr("cpf").eq("12345678900"),
+    limit=10
+)
+```
+
+## Important Attributes
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `cpf` | String | CPF without formatting (11 digits) |
+| `email` | String | User email |
+| `order_id` | String | Order ID (UUID) |
+| `company_id` | String | Company ID (UUID) |
+| `status` | String | Entity status (PENDING, ACTIVE, COMPLETED, etc) |
+| `created_at` | String | ISO timestamp of creation |
+| `updated_at` | String | ISO timestamp of last update |
+| `entity` | String | Entity type (ORDER, COMPANY, USER, etc) |
+
+## Best Practices
+
+1. **Always use GSIs when possible** - avoid table scans
+2. **Use `begins_with` for prefix queries** - efficient for hierarchical data
+3. **Limit results** - prevent excessive data transfer (default: 100)
+4. **Check for pagination** - use `LastEvaluatedKey` for large result sets
+5. **Use `get_item` for single-item lookups** - most efficient operation
+6. **Cache frequently accessed data** - reduce DynamoDB read units
+
+## Debugging Tips
+
+- **Item not found:** Check PK/SK format (correct prefixes?)
+- **Empty query results:** Check GSI attribute values (GSI1PK, GSI1SK populated?)
+- **Slow queries:** Using scan instead of query? Use GSI instead
+- **Missing data:** Check entity `created_at` timestamp (data exists?)
+
+## Related Documentation
+
+- [DynamoDB Best Practices](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html)
+- [GSI Design Patterns](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-indexes.html)
+- [`docs/dynamodb-schema.md`](../../docs/dynamodb-schema.md) - Full schema documentation

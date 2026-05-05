@@ -1,0 +1,13 @@
+# Development & CI tools
+# Install: pip install -r requirements-dev.txt
+
+# Testing
+pytest-cov>=5.0.0
+moto[boto3]>=5.0.0
+
+# Type checking
+mypy>=1.8.0
+
+# Code formatting
+black==24.4.2
+isort==5.13.0

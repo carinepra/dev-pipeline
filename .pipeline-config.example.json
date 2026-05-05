@@ -1,0 +1,64 @@
+{
+  "version": "4.0",
+  "integrations": {
+    "jira": { "enabled": false },
+    "github": { "enabled": false },
+    "dynamodb": { "enabled": false },
+    "mcp_atlassian": { "enabled": false },
+    "figma": { "enabled": false }
+  },
+  "jira": {
+    "base_url": "https://YOUR-ORG.atlassian.net",
+    "default_project": "PROJ",
+    "projects": {
+      "PROJ": { "name": "Example Project" }
+    }
+  },
+  "github": {
+    "org": "YOUR-GITHUB-ORG"
+  },
+  "component_type_map": {
+    "Front": "frontend",
+    "App": "frontend",
+    "Portal": "frontend",
+    "Back": "backend",
+    "Infra": "backend",
+    "Docs": "docs"
+  },
+  "docs_search_paths": [
+    "docs/"
+  ],
+  "repositories": {
+    "backend": {
+      "github_repo": "your-backend-repo",
+      "local_path": "your-backend-repo",
+      "type": "backend",
+      "tech_stack": "python/fastapi",
+      "database": {
+        "type": "dynamodb",
+        "description": "AWS DynamoDB (optional integration)",
+        "table_env_var": "DYNAMODB_TABLE",
+        "default_table": "your-table-name",
+        "client_module": "shared.db.dynamodb",
+        "client_class": "DynamoDBClient",
+        "credentials_env_vars": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION"]
+      }
+    },
+    "frontend": {
+      "github_repo": "your-frontend-repo",
+      "local_path": "your-frontend-repo",
+      "type": "frontend",
+      "tech_stack": "react/typescript"
+    },
+    "docs": {
+      "github_repo": "your-docs-repo",
+      "local_path": "your-docs-repo",
+      "type": "docs",
+      "tech_stack": "markdown"
+    }
+  },
+  "paths": {
+    "stories_dir": "pipelines/stories",
+    "tasks_dir": "pipelines/tasks"
+  }
+}
