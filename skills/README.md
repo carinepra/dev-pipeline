@@ -1,189 +1,161 @@
-# Pipeline Skills para Dev Pipeline Orchestrator
+# Pipeline Skills
 
-Este diretório contém as **12 skills adaptadas** especificamente para o Dev Pipeline Orchestrator.
-
-## Skills Disponíveis
-
-| # | Skill | Função | Features v1.5 | Linhas |
-|---|-------|--------|---------------|--------|
-| 1 | `pipeline-story-analyzer` | Análise completa + planejamento estratégico | 🎨 Figma<br>📚 Docs<br>💻 Codebase<br>🔍 Sanity checks<br>✅ Validação<br>🎯 Modo Plan<br>❓ AskQuestion | ~650 |
-| 2 | `pipeline-story-planner` | Planejamento estratégico (orquestrador) | 🎨 Figma<br>📚 Docs<br>💻 Codebase<br>🎯 Modo Plan<br>❓ AskQuestion | ~930 |
-| 3 | `pipeline-task-breaker` | Quebra de tasks (simplificado) | ✅ Lê .story-plan.md<br>📝 Propõe tasks<br>🎯 Modo Plan<br>❓ AskQuestion | ~270 |
-| 4 | `pipeline-task-planner` | Planeja implementação de task | 🎯 Modo Plan<br>❓ AskQuestion<br>✅ Validação decisões | ~620 |
-| 5 | `pipeline-plan-validator` | Melhora plano com 3 rounds | 🎯 Modo Plan<br>🔍 3 rounds análise | ~180 |
-| 6 | `pipeline-task-definer` | Refina task nova (TASK=NEW) | ✅ Perguntas técnicas<br>📝 Define título/ACs/priority<br>🎯 Modo Plan<br>❓ AskQuestion | ~400 |
-| 7 | `pipeline-review-backend` | Review backend | | ~396 |
-| 8 | `pipeline-review-frontend` | Review frontend | | ~349 |
-| 9 | `pipeline-review-documentation` | Review de documentação técnica | | — |
-| 10 | `pipeline-pr-responder` | Processa reviews de PR | ✅ Lê .pr-comments.json<br>📝 Gera .pr-response-plan.md | ~369 |
-| 11 | `pipeline-pr-updater` | Commit, push e atualiza PR | ✅ Filtros inteligentes<br>📝 Template estruturado | ~260 |
-| 12 | `pipeline-create-technical-docs` | Gera documentação técnica consolidada | 📚 Docs<br>✅ Consolidação | — |
-
-**Total:** ~4400+ linhas de documentação
-
-**v1.5 Updates:**
-- 🎯 Todas as skills de planejamento agora entram em **Modo Plan** automaticamente
-- ❓ Skills de planejamento usam **AskQuestion** para coleta estruturada de decisões
-- 🇧🇷 Reforço de comunicação em português mantido em todas as skills
+This directory contains the **12 skills** that power the ai-dev-pipeline orchestrator. Each skill is responsible for one step of the delivery lifecycle and is designed to run inside Cursor Agent.
 
 ---
 
-## Instalação
+## Skills Overview
 
-### Para Novos Desenvolvedores
+| # | Skill | Purpose | Reads from | Writes to |
+|---|-------|---------|-----------|----------|
+| 1 | `pipeline-story-analyzer` | Full story analysis + strategic planning + decisions | Figma, Docs, Codebase | `.story-plan.md` |
+| 2 | `pipeline-story-planner` | Strategic planning orchestration for the story flow | Figma, Docs, Codebase | Story plan output |
+| 3 | `pipeline-task-breaker` | Proposes task breakdown from story plan | `.story-plan.md` | `.tasks-proposed.json` |
+| 4 | `pipeline-task-planner` | Implementation plan for a task (steps, risks, validations) | Pipeline state | `.plan.md` |
+| 5 | `pipeline-plan-validator` | Validates and improves plans in 3 analysis rounds | `.plan.md` | Updated `.plan.md` |
+| 6 | `pipeline-task-definer` | Defines/refines a new task when `TASK=NEW` | User input + Codebase | Task definition output |
+| 7 | `pipeline-review-backend` | Backend code review (checklist + suggestions) | Diff + pipeline state | `.review-report.md` |
+| 8 | `pipeline-review-frontend` | Frontend code review (checklist + suggestions) | Diff + pipeline state | `.review-report.md` |
+| 9 | `pipeline-review-documentation` | Technical documentation review | Docs + pipeline state | Review report |
+| 10 | `pipeline-pr-responder` | Processes review comments and generates a response plan | `.pr-comments.json` | `.pr-response-plan.md` |
+| 11 | `pipeline-pr-updater` | Applies changes (commit/push) and updates PR | `.pr-response-plan.md` | Commit + PR update |
+| 12 | `pipeline-create-technical-docs` | Consolidates and generates final technical documentation | Docs + pipeline state | Final docs |
 
-Execute o script de sincronização após clonar o repo:
+---
+
+## Installation
+
+> **Prerequisite:** Cursor IDE with Agent mode enabled. Skills are installed globally for your Cursor installation, not per-project.
+
+### Automatic (recommended)
+
+Run the sync script after cloning the repo:
 
 ```bash
 ./scripts/sync-skills.sh
 ```
 
-Isso irá:
-1. ✅ Copiar todas as skills `pipeline-*` para `~/.cursor/skills/`
-2. ✅ Detectar mudanças (se skill já existe, atualiza apenas se diferente)
-3. ✅ Mostrar resumo da sincronização
+This will:
+1. Copy all `pipeline-*` skills to `~/.cursor/skills/`
+2. Detect changes — only updates skills that differ from the repo
+3. Show a sync summary
 
-**Modo dry-run** (ver mudanças sem aplicar):
+**Dry run** (preview changes without applying):
 
 ```bash
 ./scripts/sync-skills.sh --dry-run
 ```
 
-### Script Antigo (Deprecated)
-
-```bash
-./scripts/install-pipeline-skills.sh  # Use sync-skills.sh ao invés
-```
-
-### Manualmente
-
-Se preferir instalar manualmente:
+### Manual
 
 ```bash
 cp -r skills/pipeline-* ~/.cursor/skills/
 ```
 
-### Verificar Instalação
+### Verify installation
 
 ```bash
 ls -la ~/.cursor/skills/pipeline-*
 ```
 
-Você deve ver 12 diretórios `pipeline-*`:
-- `pipeline-story-analyzer/`
-- `pipeline-story-planner/`
-- `pipeline-task-breaker/`
-- `pipeline-task-planner/`
-- `pipeline-plan-validator/`
-- `pipeline-task-definer/`
-- `pipeline-review-backend/`
-- `pipeline-review-frontend/`
-- `pipeline-review-documentation/`
-- `pipeline-pr-responder/`
-- `pipeline-pr-updater/`
-- `pipeline-create-technical-docs/`
+You should see 12 directories:
+
+```
+pipeline-story-analyzer/
+pipeline-story-planner/
+pipeline-task-breaker/
+pipeline-task-planner/
+pipeline-plan-validator/
+pipeline-task-definer/
+pipeline-review-backend/
+pipeline-review-frontend/
+pipeline-review-documentation/
+pipeline-pr-responder/
+pipeline-pr-updater/
+pipeline-create-technical-docs/
+```
 
 ---
 
-## Diferenças das Skills Originais
+## Why Separate Pipeline Skills?
 
-Estas skills são **versões adaptadas** das skills originais do Cursor (`skill-*`).
+The original `@skill-*` skills were designed for standalone use in Cursor. The pipeline requires specific guarantees that standalone skills don't provide:
 
-### Principais Diferenças
+| Aspect | Original skill | Pipeline skill |
+|--------|---------------|----------------|
+| **Output** | Optional / flexible | Always writes a file |
+| **File path** | User-defined | Fixed by convention |
+| **Linters** | Runs linters | Reads results (orchestrator already ran them) |
+| **Jira** | Creates issues | Only proposes (orchestrator creates) |
+| **Scope** | Always asks | Reads from state (avoids duplication) |
+| **Analysis** | Integrated | Separated (`pipeline-story-analyzer` owns it) |
+| **Integration** | Standalone | Optimized for pipeline flow |
 
-| Aspecto | Skill Original | Pipeline Skill |
-|---------|---------------|----------------|
-| **Output** | Opcional/flexível | **SEMPRE gera arquivo** |
-| **Path** | Definido pelo usuário | **Fixo por convenção** |
-| **Linters** | Roda linters | **Lê resultado** (orquestrador já rodou) |
-| **Jira** | Cria issues | **Apenas propõe** (orquestrador cria) |
-| **Escopo** | Pergunta sempre | **Lê do estado** (evita duplicação) |
-| **Análise** | Integrada | **Separada** (pipeline-story-analyzer) |
-| **Integração** | Standalone | **Otimizado para pipeline** |
+### Key dependencies between skills
 
-### v1.4.0 — Arquitetura de Duas Fases
+Not all skills are independent — some depend on the output of a previous skill:
 
-**Antes (v1.3):**
 ```
-pipeline-task-breaker (antigo) → análise + proposta de tasks (tudo junto)
+pipeline-story-analyzer       → writes .story-plan.md
+        ↓
+pipeline-task-breaker         → reads .story-plan.md, writes .tasks-proposed.json
+        ↓
+pipeline-task-planner         → reads pipeline state, writes .plan.md
+        ↓
+pipeline-plan-validator       → reads .plan.md, improves in 3 rounds
+        ↓
+(Cursor Agent implements the task — not a pipeline skill)
+        ↓
+pipeline-review-backend /
+pipeline-review-frontend      → reads diff + state, writes .review-report.md
+        ↓
+pipeline-pr-responder         → reads .pr-comments.json, writes .pr-response-plan.md
+        ↓
+pipeline-pr-updater           → reads .pr-response-plan.md, commits + updates PR
+        ↓
+pipeline-create-technical-docs → reads docs + state, writes final documentation
 ```
-
-**Agora (v1.4):**
-```
-pipeline-story-analyzer → análise completa + validação + decisões
-   ↓
-pipeline-task-breaker → lê plano + propõe tasks (simplificado)
-```
-
-### Por Que Skills Separadas?
-
-As skills originais (`skill-*`) foram projetadas para uso standalone no Cursor. O pipeline precisa de garantias específicas:
-
-1. **Arquivos sempre criados** nos paths esperados
-2. **Sem duplicação** de trabalho (linters, fetch do Jira, escopo)
-3. **Paths padronizados** para integração automática
-4. **Outputs estruturados** (JSON, Markdown)
-5. **Compartilhamento de estado** (lê `.pipeline-state/*.json`)
-6. **Contexto técnico automático** (busca em docs do projeto via `.pipeline-config.json`)
 
 ---
 
-## Estrutura de Cada Skill
+## Skill Structure
 
-Cada skill contém:
+Each `SKILL.md` is the instruction file Cursor Agent reads when you invoke `@pipeline-*`. It defines what the skill expects as input, what it must produce as output, and how to handle edge cases. Every skill follows the same structure:
 
 ```
 pipeline-*/
-└── SKILL.md      # Documentação completa (300-600 linhas)
-    ├── Descrição
-    ├── Input esperado (do orquestrador)
-    ├── Workflow (passo a passo)
-    ├── Output obrigatório (path fixo)
-    ├── Diferenças da skill original
-    ├── Validações
+└── SKILL.md
+    ├── Description
+    ├── Expected input (from orchestrator)
+    ├── Workflow (step by step)
+    ├── Required output (fixed path)
+    ├── Differences from original skill
+    ├── Validations
     ├── Troubleshooting
-    └── Exemplos
+    └── Examples
 ```
 
 ---
 
-## Como Usar
+## Usage During the Pipeline
 
-### Durante o Pipeline
-
-O orquestrador mostra instruções claras:
+The orchestrator provides clear instructions at each step:
 
 ```
-Execute no Cursor:
-  @pipeline-task-breaker quebrar <PROJECT>-XXX
-  
-O arquivo será criado em:
+Run in Cursor:
+  @pipeline-task-breaker break <PROJECT>-XXX
+
+Output will be written to:
   pipelines/stories/<PROJECT>-XXX/.tasks-proposed.json
 ```
 
-### Importante
-
-❌ **NÃO use as skills originais** (`@skill-*`) durante o pipeline  
-✅ **Use SEMPRE as skills pipeline** (`@pipeline-*`)
+> ⚠️ Always use `@pipeline-*` skills during the pipeline flow. The original `@skill-*` skills do not follow the orchestrator's output conventions and will break state.
 
 ---
 
-## Atualização
+## Output Path Conventions
 
-Quando as skills forem atualizadas no repo:
-
-```bash
-git pull
-./scripts/sync-skills.sh
-```
-
-O script atualiza apenas skills que difiram do repo.
-
----
-
-## Paths de Output
-
-Todas as skills seguem a convenção:
+All skills write to standardized paths under `pipelines/`:
 
 ```
 pipelines/
@@ -198,87 +170,48 @@ pipelines/
 
 ---
 
-## Troubleshooting
+## Keeping Skills Up to Date
 
-### "Skill não encontrada no Cursor"
+When skills are updated in the repo:
 
-**Erro ao executar** `@pipeline-task-breaker`:
-```
-Skill 'pipeline-task-breaker' not found
-```
-
-**Solução:**
 ```bash
-# Verificar se skill está instalada
-ls ~/.cursor/skills/pipeline-task-breaker
-
-# Se não existe, instalar
+git pull
 ./scripts/sync-skills.sh
 ```
 
-### "Arquivo não criado"
-
-**Erro no pipeline:**
-```
-FileNotFoundError: pipelines/stories/<KEY>/.tasks-proposed.json
-```
-
-**Causa:** Skill não completou corretamente ou não usou `Write` tool.
-
-**Solução:**
-1. Verificar no chat do Cursor se skill mostrou "✅ Arquivo criado:"
-2. Se não, reexecutar skill
-3. Se persistir, verificar se está usando skill correta (`@pipeline-*`, não `@skill-*`)
-
-### "Path incorreto"
-
-**Erro:**
-```
-Expected: pipelines/tasks/<KEY>/.plan.md
-Got: <KEY>.plan.md
-```
-
-**Causa:** Usou skill original (`@skill-*`) ao invés de pipeline (`@pipeline-*`).
-
-**Solução:** Sempre usar `@pipeline-*`.
+The script only updates skills that differ from the repo — no unnecessary overwrites.
 
 ---
 
-## Documentação Completa
+## Extending: Adding a New Skill
 
-- **Guia do pipeline:** [`docs/dev-pipeline-guide.md`](../docs/dev-pipeline-guide.md)
-- **Integração:** [`docs/pipeline-skills-integration.md`](../docs/pipeline-skills-integration.md)
-- **Resumo:** [`PIPELINE-SKILLS-SUMMARY.md`](../PIPELINE-SKILLS-SUMMARY.md)
-
----
-
-## Manutenção
-
-### Adicionar Nova Skill Pipeline
-
-1. Criar em `skills/pipeline-{name}/SKILL.md`
-2. Garantir geração de arquivo:
-   ```python
+1. Create `skills/pipeline-{name}/SKILL.md` following the existing structure
+2. In your `SKILL.md`, instruct the agent to always write its output file and confirm:
+   ```
    Write(path=expected_output, contents=result)
-   print(f"✅ Arquivo criado: {expected_output}")
+   ✅ File created: {expected_output}
    ```
-3. Adicionar método em `utils/skills_runner.py`
-4. Integrar no fluxo do `dev_pipeline.py`
-5. Testar localmente
-6. Commit e outros devs fazem `./scripts/sync-skills.sh`
-
-### Atualizar Skill Existente
-
-1. Editar `skills/pipeline-{name}/SKILL.md`
-2. Commit alterações
-3. Outros devs fazem:
-   ```bash
-   git pull
-   ./scripts/sync-skills.sh
-   ```
+3. Add the corresponding method in `utils/skills_runner.py`
+4. Integrate the step into `dev_pipeline.py`
+5. Document inputs, outputs, and file paths in this README
+6. Commit — other developers run `./scripts/sync-skills.sh` to get the update
 
 ---
 
-## Contato
+## Troubleshooting
 
-Dúvidas ou problemas com as skills pipeline? Ver documentação completa em `docs/` ou consultar o time.
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| `Skill 'pipeline-*' not found` in Cursor | Skill not installed | Run `./scripts/sync-skills.sh` |
+| `FileNotFoundError: pipelines/...` | Skill didn't complete or didn't write output | Check Cursor chat for "✅ File created:" — re-run skill if missing |
+| Wrong output path (e.g. `<KEY>.plan.md` instead of `pipelines/tasks/<KEY>/.plan.md`) | Used `@skill-*` instead of `@pipeline-*` | Always use `@pipeline-*` skills |
+| Skill exists but is outdated | Local version differs from repo | Run `git pull && ./scripts/sync-skills.sh` |
+
+---
+
+## Related Documentation
+
+<!-- PROMPT FOR AGENT: Verify these paths exist before publishing. Add or remove links accordingly. -->
+- **Pipeline guide:** [`docs/dev-pipeline-guide.md`](../docs/dev-pipeline-guide.md)
+- **Skills integration guide:** [`docs/pipeline-skills-integration.md`](../docs/pipeline-skills-integration.md)
+- **Main README:** [`README.md`](../README.md)

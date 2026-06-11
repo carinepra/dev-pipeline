@@ -1,71 +1,70 @@
-# dev-pipeline
+# ai-dev-pipeline
 
-Orquestrador de **pipeline de desenvolvimento** para Cursor Agents: transforma uma *story* (ou uma *task*) em uma sequência guiada e persistente de etapas (análise → planejamento → implementação → revisão → publicação → documentação), com integrações **opcionais** (Jira/GitHub/MCP/Figma/DynamoDB).
+> **From Jira ticket to open PR — orchestrated, persistent, and safe.**
 
-> **Objetivo**: reduzir o “custo de coordenação” do desenvolvimento, padronizar o fluxo e manter rastreabilidade do que foi feito em cada etapa.
+![ai-dev-pipeline console demo](assets/dev-pipeline-demo.png)
 
-## Sumário
+---
 
-- [Por que esse projeto existe?](#por-que-esse-projeto-existe)
-- [Principais features](#principais-features)
-- [Diagramas (fluxos v2.0)](#diagramas-fluxos-v20)
-- [Skills do pipeline (Cursor Agent Skills)](#skills-do-pipeline-cursor-agent-skills)
-- [Stack / Requisitos](#stack--requisitos)
-- [Quickstart](#quickstart)
-- [Uso (comandos principais)](#uso-comandos-principais)
-- [(Opcional) MCP Servers](#opcional-mcp-servers)
-- [Estrutura do repositório](#estrutura-do-repositório)
-- [Qualidade](#qualidade)
-- [Troubleshooting](#troubleshooting)
-- [Segurança / Publicação](#segurança--publicação)
-- [Licença](#licença)
+## Background
 
-## Por que esse projeto existe?
+In early 2026, two thirds of the engineering team at the fintech where I work was let go overnight. A small team was left responsible for 9 active repositories across 4 products. The problem wasn't workload — it was context switching. Every new task meant re-reading unfamiliar code, re-planning from scratch, and manually coordinating every step of delivery across repos with different conventions.
 
-- **Automação com controle**: cada etapa é uma Skill dedicada e o pipeline mantém um estado local versionável/inspecionável.
-- **Recomeçar sem dor**: dá para pausar/retomar sem perder o contexto.
-- **Agnóstico de empresa**: tudo que seria específico de uma empresa foi movido para configuração/flags.
+I built this pipeline to solve that. I built and presented it in about a week, without dropping my normal delivery work. It's been running in production delivery since and has expanded to handle bug flows and multi-repo work simultaneously. Engineers who weren't heavy AI users adopted it organically — because it was predictable and safe, not just powerful.
 
-## Principais funcionalidades
+---
 
-- **Story pipelines e task pipelines** (incluindo criação de task `NEW`)
-- **Persistência de estado** por story/task (pausar, retomar, avançar/voltar etapa)
-- **Integrações por feature flag** via `.pipeline-config.json` (arquivo local) / `.pipeline-config.example.json` (template)
-- **Execução via `make`** com comandos de alto nível
-- **Windows-friendly** (Git Bash / PowerShell) + macOS/Linux
+## Why Not Just Use Cursor Agent Directly?
 
-## Diagramas (fluxos v2.0)
+Cursor Agent is powerful but stateless. Every session starts cold, re-reads the codebase, and makes decisions without memory of what came before. For a full delivery lifecycle across multiple repositories, that breaks down in four ways:
 
-### Demo (console)
+- **No memory between sessions** — context is rebuilt from scratch every time
+- **Unconstrained scope** — with live Jira and GitHub integrations, a hallucinating agent can close the wrong PR, delete tasks, or push to the wrong branch
+- **No trace of past decisions** — why something was built a certain way is lost when the session ends
+- **Expensive context reconstruction** — re-reading the entire codebase at every step is slow and burns tokens unnecessarily
 
-![Demonstração do dev-pipeline no console](assets/dev-pipeline-demo.png)
+Unlike prompt templates or rule files, this pipeline maintains persistent state across sessions and enforces human checkpoints before anything ships.
 
-### Story pipeline (visão geral)
+---
+
+## How It Works
+
+**Why scoped skills instead of broad context files?**
+
+Context files give the agent more analytical freedom — it can reason across the whole problem. Skills constrain each step to a defined scope. The decision was architectural:
+
+- **Safety**: live Jira and GitHub integrations mean a hallucinating agent has real consequences. Scoped skills can't act outside their boundary.
+- **Token cost**: persistent output files mean each skill picks up exactly where the previous one left off — no re-reading the codebase from scratch.
+- **Institutional memory**: the final documentation skill saves to the doc repository. Next time someone works on a related feature, they give the agent the doc file instead of re-reading all the code.
+
+The pipeline is orchestrated by **12 Cursor Agent skills** (`@pipeline-*`), each responsible for one step of the delivery lifecycle. Skills write their outputs to standardized file paths — for example, the story analyzer writes `.story-plan.md` and the task planner reads it directly without re-analyzing the codebase. The orchestrator reads those outputs, persists state, and advances the flow.
+
+### Story pipeline
 
 ```mermaid
 flowchart LR
-  A["Análise da story"] --> B["Quebra em tasks"]
-  B --> C["Planejamento das tasks"]
-  C --> D["Implementação"]
+  A["Story analysis"] --> B["Task breakdown"]
+  B --> C["Task planning"]
+  C --> D["Implementation"]
   D --> E["Review"]
-  E --> F["Publicação (Git/PR)"]
-  F --> G["Aguardando merge"]
-  G --> H["Documentação"]
+  E --> F["Publish (Git/PR)"]
+  F --> G["Awaiting merge"]
+  G --> H["Documentation"]
 ```
 
-### Task pipeline (visão geral)
+### Task pipeline
 
 ```mermaid
 flowchart LR
-  A["Discussão/definição"] --> B["Planejamento"]
-  B --> C["Implementação"]
+  A["Discussion / definition"] --> B["Planning"]
+  B --> C["Implementation"]
   C --> D["Review"]
-  D --> E["Publicação (Git/PR)"]
-  E --> F["Aguardando merge"]
-  F --> G["Concluída"]
+  D --> E["Publish (Git/PR)"]
+  E --> F["Awaiting merge"]
+  F --> G["Done"]
 ```
 
-### Comandos e transições principais
+### Commands and transitions
 
 ```mermaid
 flowchart TB
@@ -78,61 +77,72 @@ flowchart TB
   R["make dev-pipeline-resume"] --> L
 ```
 
-## Skills do pipeline (Cursor Agent Skills)
+---
 
-O pipeline é executado por **12 skills** (`@pipeline-*`) que rodam dentro do Cursor e produzem **outputs em arquivos** (Markdown/JSON) em paths padronizados. O orquestrador lê esses outputs, persiste estado e avança o fluxo.
+## Skills Reference
 
-### Principais skills e responsabilidades
+For full input/output details and examples, see [skills\README.md](skills/README.md).
 
-| Skill | Para que serve |
-|---|---|
-| `pipeline-story-analyzer` | análise completa da story + decisões e plano inicial |
-| `pipeline-story-planner` | planejamento estratégico do fluxo da story |
-| `pipeline-task-breaker` | quebra a story em tasks propostas (a partir do plano) |
-| `pipeline-task-definer` | define/refina uma task quando `TASK=NEW` |
-| `pipeline-task-planner` | plano de execução da task (passos, riscos, validações) |
-| `pipeline-plan-validator` | valida/melhora planos em rounds (qualidade e consistência) |
-| `pipeline-review-backend` | review de código backend (checklist + sugestões) |
-| `pipeline-review-frontend` | review de código frontend (checklist + sugestões) |
-| `pipeline-review-documentation` | review de documentação técnica (estrutura, clareza, completude) |
-| `pipeline-pr-responder` | processa comentários de review e gera plano de resposta |
-| `pipeline-pr-updater` | aplica mudanças (commit/push) e atualiza PR |
-| `pipeline-create-technical-docs` | consolida e gera documentação técnica final |
+> ⚠️ Always use `@pipeline-*` skills during the flow. The original `@skill-*` skills do not follow the orchestrator's output conventions.
 
-### Convenção de outputs (exemplos)
+| Skill | Purpose |
+|-------|---------|
+| `pipeline-story-analyzer` | Full story analysis + decisions and initial plan |
+| `pipeline-story-planner` | Strategic planning for the story flow |
+| `pipeline-task-breaker` | Breaks the story into proposed tasks |
+| `pipeline-task-definer` | Defines/refines a task when `TASK=NEW` |
+| `pipeline-task-planner` | Task execution plan (steps, risks, validations) |
+| `pipeline-plan-validator` | Validates and improves plans in rounds |
+| `pipeline-review-backend` | Backend code review (checklist + suggestions) |
+| `pipeline-review-frontend` | Frontend code review (checklist + suggestions) |
+| `pipeline-review-documentation` | Technical documentation review (structure, clarity, completeness) |
+| `pipeline-pr-responder` | Processes review comments and generates a response plan |
+| `pipeline-pr-updater` | Applies changes (commit/push) and updates PR |
+| `pipeline-create-technical-docs` | Consolidates and generates final technical documentation |
 
-- **Story**:
-  - `pipelines/stories/{story_key}/.story-plan.md` (story analyzer)
-  - `pipelines/stories/{story_key}/.tasks-proposed.json` (task breaker)
-- **Task**:
-  - `pipelines/tasks/{task_key}/.plan.md` (task planner)
-  - `pipelines/tasks/{task_key}/.review-report.md` (review backend/frontend)
-  - `pipelines/tasks/{task_key}/.pr-response-plan.md` (pr responder)
+---
 
-> Dica: use sempre `@pipeline-*` durante o fluxo. As skills `@skill-*` (originais) não seguem as convenções de output do orquestrador.
+## Requirements
 
-Para detalhes de cada skill (inputs/outputs e exemplos), veja `skills/README.md`.
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Python | 3.12+ | Required for orchestrator |
+| Node.js | 18+ | Required for MCP integrations (optional) |
+| Cursor IDE | Latest | Agent mode required |
+| Git | Any recent | Required |
+| GitHub CLI (`gh`) | Any recent | Only if `integrations.github.enabled=true` |
 
-## Tecnologias / Requisitos
+---
 
-- **Cursor IDE** com Agent mode
-- **Python 3.12+**
-- **Node.js 18+** (para `npx`, se você usar MCPs como Figma)
-- **Git** (e opcionalmente **GitHub CLI `gh`** se `integrations.github.enabled=true`)
+## Quick Start
 
-## Quickstart
-
-### 1) Instalação (macOS/Linux)
+### macOS / Linux
 
 ```bash
+# 1. Install dependencies
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
+
+# 2. Configure
+cp .pipeline-config.example.json .pipeline-config.json
+cp .env.modelo .env
+# Edit .pipeline-config.json to enable/disable integrations
+# Edit .env only for integrations you enabled
+
+# 3. Install Cursor skills
+bash scripts/sync-skills.sh
+
+# 4. Verify
+make dev-pipeline-list
 ```
 
-### 1) Instalação (Windows)
+### Windows
 
-No PowerShell:
+<details>
+<summary>Windows setup (Git Bash / PowerShell)</summary>
+
+**PowerShell:**
 
 ```powershell
 python -m venv venv
@@ -140,89 +150,82 @@ venv\Scripts\python -m pip install --upgrade pip
 venv\Scripts\python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-No Git Bash:
+**Git Bash:**
 
 ```bash
 source venv/Scripts/activate
 ```
 
-> Observação (Windows): se você ainda não tiver `make`, instale via MSYS2 e garanta que `/c/msys64/usr/bin` está no `PATH` do Git Bash.
+> If `make` is not available, install via MSYS2 and ensure `/c/msys64/usr/bin` is in your Git Bash `PATH`.
 
-### 2) Configuração local (recomendado)
+Then follow steps 2–4 from the macOS/Linux instructions above.
 
-Crie o arquivo de config local (não commitado):
+</details>
 
-```bash
-cp .pipeline-config.example.json .pipeline-config.json
-```
+---
 
-Crie o `.env` (não commitado):
+## Configuration
 
-```bash
-cp .env.modelo .env
-```
-
-Edite `.pipeline-config.json` para:
-
-- **habilitar/desabilitar** integrações em `integrations.*.enabled`
-- configurar `jira.base_url`, `github.org` e `repositories` (se você usar integrações)
-
-Exemplo mínimo (trecho):
+Create `.pipeline-config.json` from the example template. All integrations are **disabled by default** — enable only what you need.
 
 ```json
 {
   "integrations": {
     "jira": { "enabled": false },
-    "github": { "enabled": false }
+    "github": { "enabled": false },
+    "dynamodb": { "enabled": false }
   }
 }
 ```
 
-Edite `.env` **somente** com o que você habilitar:
+| Variable | Required when |
+|----------|--------------|
+| `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_SERVER` | `integrations.jira.enabled=true` |
+| `GITHUB_TOKEN`, `GITHUB_ORG` | `integrations.github.enabled=true` |
+| `AWS_REGION`, `DYNAMODB_TABLE`, `AWS_*` | `integrations.dynamodb.enabled=true` |
 
-| Variável | Quando precisa |
-|---|---|
-| `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_SERVER` | se `integrations.jira.enabled=true` |
-| `GITHUB_TOKEN`, `GITHUB_ORG` | se `integrations.github.enabled=true` |
-| `AWS_REGION`, `DYNAMODB_TABLE`, `AWS_*` | se `integrations.dynamodb.enabled=true` |
+> Never commit `.env` or `.pipeline-config.json`. Both are gitignored. Use `.pipeline-config.example.json` and `.env.modelo` as templates.
 
-### 3) Instalar as Cursor Skills
+---
 
-```bash
-bash scripts/sync-skills.sh
-```
-
-Isso instala as skills em `~/.cursor/skills/pipeline-*/`. Rode novamente após `git pull`.
-
-### 4) Verificar se está tudo OK
+## Usage
 
 ```bash
-make dev-pipeline-list
-```
+# Start a story pipeline
+make dev-pipeline STORY=PROJ-123
 
-Se o comando listar vazio, está tudo certo (primeira execução).
+# Start a task pipeline
+make dev-pipeline TASK=PROJ-456
 
-## Uso (comandos principais)
+# Create a new standalone task
+make dev-pipeline TASK=NEW
 
-```bash
-make dev-pipeline STORY=PROJ-123           # pipeline de story
-make dev-pipeline TASK=PROJ-456            # pipeline de task existente
-make dev-pipeline TASK=NEW                 # cria nova task (sem story)
-make dev-pipeline TASK=NEW STORY=PROJ-123  # cria nova task vinculada à story
+# Create a new task linked to a story
+make dev-pipeline TASK=NEW STORY=PROJ-123
 
+# Navigate and manage state
 make dev-pipeline-resume TASK=PROJ-456
 make dev-pipeline-next TASK=PROJ-456
 make dev-pipeline-previous TASK=PROJ-456
 make dev-pipeline-status TASK=PROJ-456
 
+# List all active pipelines
+make dev-pipeline-list
+
+# Help
 make dev-pipeline-help
 ```
 
-## (Opcional) MCP Servers
+---
 
-Você pode integrar com MCPs (ex.: Atlassian/Figma). Isso é **global do Cursor** e **não é obrigatório**.
+## Optional: MCP Servers
 
-Exemplo de `~/.cursor/mcp.json`:
+You can integrate with MCP servers for richer context during pipeline steps. This is a global Cursor setting and is not required.
+
+- **Atlassian MCP** — allows the story analyzer and task planner to read Jira issues directly
+- **Figma MCP** — allows the story analyzer to read design specs directly from Figma files
+
+Example `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -233,63 +236,91 @@ Exemplo de `~/.cursor/mcp.json`:
     },
     "figma": {
       "command": "npx",
-      "args": ["-y", "figma-developer-mcp", "--figma-api-key=SEU_FIGMA_TOKEN", "--stdio"]
+      "args": ["-y", "figma-developer-mcp", "--figma-api-key=YOUR_FIGMA_TOKEN", "--stdio"]
     }
   }
 }
 ```
 
-## Documentação
+---
 
-- **Guia do projeto**: `docs/DEV-PIPELINE-GUIDE.md`
-- **Checklist de sanitização (publicação)**: `SANITIZATION_CHECKLIST.md`
+## State and Output Conventions
 
-## Estrutura do repositório
+Persistent state is stored under `pipelines/` (gitignored). Key output paths:
+
+**Story:**
+- `pipelines/stories/{story_key}/.story-plan.md`
+- `pipelines/stories/{story_key}/.tasks-proposed.json`
+
+**Task:**
+- `pipelines/tasks/{task_key}/.plan.md`
+- `pipelines/tasks/{task_key}/.review-report.md`
+- `pipelines/tasks/{task_key}/.pr-response-plan.md`
+
+---
+
+## Extending the Pipeline
+
+This pipeline is designed to be extended. To add to it:
+
+- **New skill** — add a `.md` skill file under `skills/` following the existing naming convention (`pipeline-*`). Run `bash scripts/sync-skills.sh` to install it in Cursor. Document inputs, outputs, and expected file paths in [skills\README.md](skills/README.md).
+- **New integration** — add a feature flag under `integrations` in `.pipeline-config.example.json`, implement the integration under `operations/`, and gate it with `config.integrations.<name>.enabled`.
+- **New pipeline step** — add the step to the orchestrator in `pipelines/` and create the corresponding skill. Follow the existing output path convention so state persists correctly.
+
+---
+
+## Repository Structure
 
 ```
-cli/           - CLI (entry point)
-core/          - persistência de estado, logging, constantes
-operations/    - integrações e operações (git/jira/github etc.)
-pipelines/     - orquestração de story/task pipelines
-utils/         - config, paths, validators, helpers
-skills/        - Cursor Agent Skills por etapa
-docs/          - guias e documentação do projeto
-scripts/       - scripts auxiliares (sync/install de skills)
-tests/         - testes unitários/integrados
-logs/          - logs (gitignored)
+cli/           — CLI entry point
+core/          — state persistence, logging, constants
+operations/    — integrations (git, jira, github, etc.)
+pipelines/     — story/task pipeline orchestration
+utils/         — config, paths, validators, helpers
+skills/        — Cursor Agent Skills per step
+docs/          — guides and project documentation
+scripts/       — skill sync/install scripts
+tests/         — unit and integration tests
+logs/          — logs (gitignored)
 ```
 
-## Qualidade
+---
 
-Rodar testes:
+## Quality
 
 ```bash
+# Run tests
 python -m pytest -q
-```
 
-Formatar e checar:
-
-```bash
+# Format and lint
 make format
 make lint
 ```
 
+---
+
 ## Troubleshooting
 
-- **`make: command not found` (Windows)**: instale `make` via MSYS2 e garanta que `/c/msys64/usr/bin` está no `PATH` do Git Bash.
-- **`ModuleNotFoundError`**: confirme que o venv correto está ativo:
+| Problem | Fix |
+|---------|-----|
+| `make: command not found` (Windows) | Install `make` via MSYS2, add `/c/msys64/usr/bin` to Git Bash `PATH` |
+| `ModuleNotFoundError` | Confirm correct venv is active: `python -c "import sys; print(sys.executable)"` |
+| Jira/GitHub credential errors | Only configure `.env` for integrations enabled in `.pipeline-config.json` |
+| Skills not found in Cursor | Run `bash scripts/sync-skills.sh` again after any `git pull` |
 
-```bash
-python -c "import sys; print(sys.executable)"
-```
+---
 
-- **Erro de credenciais (Jira/GitHub)**: só configure `.env` para integrações que você habilitou em `.pipeline-config.json`.
+## Documentation
 
-## Segurança / Publicação
+- **Full guide:** `docs/DEV-PIPELINE-GUIDE.md`
+- **Skills reference:** [skills\README.md](skills/README.md)
 
-- **Não commite** `.env` nem `.pipeline-config.json` (o repo já inclui um exemplo em `.pipeline-config.example.json`).
-- Se você for publicar este repositório, rode a checklist em `SANITIZATION_CHECKLIST.md`.
+---
 
-## Licença
+## License
 
-Defina a licença que você quiser usar (ex.: MIT) e adicione um arquivo `LICENSE`.
+MIT — see [LICENSE](LICENSE).
+
+---
+
+If this approach to AI-native development resonates, consider starring the repo ⭐
