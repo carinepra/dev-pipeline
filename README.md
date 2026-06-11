@@ -139,8 +139,7 @@ make dev-pipeline-list
 
 ### Windows
 
-<details>
-<summary>Windows setup (Git Bash / PowerShell)</summary>
+Windows setup (Git Bash / PowerShell)
 
 **PowerShell:**
 
@@ -159,8 +158,6 @@ source venv/Scripts/activate
 > If `make` is not available, install via MSYS2 and ensure `/c/msys64/usr/bin` is in your Git Bash `PATH`.
 
 Then follow steps 2–4 from the macOS/Linux instructions above.
-
-</details>
 
 ---
 
