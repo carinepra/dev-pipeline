@@ -15,7 +15,7 @@ description: Review de código backend para o Dev Pipeline Orchestrator. Lê `.r
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Código backend:** Consulte `local_path` do repo backend em `.pipeline-config.json`
 - **Explore o src/ do repo** conforme path do config
 
@@ -37,7 +37,7 @@ description: Review de código backend para o Dev Pipeline Orchestrator. Lê `.r
 {PIPELINE_ROOT}/pipelines/tasks/{task_key}/.review-data.json
 ```
 
-**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `onze-dev-pipeline/`, partindo do workspace root.
+**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `dev-pipeline/`, partindo do workspace root.
 
 **SEMPRE use o caminho COMPLETO ao chamar a ferramenta Read:**
 ```python
@@ -65,12 +65,12 @@ O orquestrador já forneceu:
 **Se o arquivo não existir:** gerá-lo automaticamente via Shell com `git diff` e linters — **NÃO perguntar ao usuário**.
 
 ```bash
-# Coletar diff (rodar no repo backend: onze-api-main)
-git -C {WORKSPACE_ROOT}/onze-api-main diff
-git -C {WORKSPACE_ROOT}/onze-api-main diff --cached
+# Coletar diff (rodar no repo backend: white-api)
+git -C {WORKSPACE_ROOT}/white-api diff
+git -C {WORKSPACE_ROOT}/white-api diff --cached
 
 # Linters
-cd {WORKSPACE_ROOT}/onze-api-main && black --check . && mypy . && ruff check .
+cd {WORKSPACE_ROOT}/white-api && black --check . && mypy . && ruff check .
 ```
 
 Salvar resultado em `{PIPELINE_ROOT}/pipelines/tasks/{task_key}/.review-data.json` e prosseguir.
@@ -260,8 +260,8 @@ Cada finding com severity: **FAIL** / **WARN** / **PASS** / **EDGE** / **DESIGN*
 ### 4.1 Determinar caminho
 
 ```python
-story_key = "HUB-436"
-task_key = "HUB-437"
+story_key = "PROJ-436"
+task_key = "PROJ-437"
 output_file = f"pipelines/tasks/{task_key}/.review-report.md"
 ```
 
@@ -270,7 +270,7 @@ output_file = f"pipelines/tasks/{task_key}/.review-report.md"
 ```markdown
 # Code Review Report — Backend
 
-**Task:** HUB-437  
+**Task:** PROJ-437  
 **Date:** 2026-03-25  
 **Reviewer:** Pipeline (Automated)
 
@@ -410,7 +410,7 @@ Write(
 ### 4.4 Confirmar criação
 
 ```
-✅ Arquivo criado: pipelines/tasks/HUB-437/.review-report.md
+✅ Arquivo criado: pipelines/tasks/PROJ-437/.review-report.md
 
 📊 Resultado:
 - 2 FAIL (must fix)

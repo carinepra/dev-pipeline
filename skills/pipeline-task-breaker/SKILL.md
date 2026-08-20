@@ -11,13 +11,13 @@ description: Task breakdown para o Dev Pipeline Orchestrator. Lê contexto de .s
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -350,7 +350,7 @@ elif answers["proposal_quality"] in ["minor_adjusts", "major_adjusts"]:
 ### 4.1 Determinar caminho do arquivo
 
 ```python
-story_key = "HUB-542"  # Fornecido pelo orquestrador
+story_key = "PROJ-542"  # Fornecido pelo orquestrador
 output_path = Path(f"{STORIES_DIR}/{story_key}/.tasks-proposed.json")
 
 print(f"\n📝 Output esperado: {output_path}")
@@ -401,7 +401,7 @@ print(f"   Frontend: {sum(1 for t in tasks_data['tasks'] if t['id'].startswith('
 
 ```json
 {
-  "story_key": "HUB-542",
+  "story_key": "PROJ-542",
   "generated_at": "2026-03-25T15:30:00",
   "tasks": [
     {

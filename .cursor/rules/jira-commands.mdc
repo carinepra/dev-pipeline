@@ -1,14 +1,14 @@
 ---
-description: Jira commands and workflow for Firebolt bug analysis
+description: Jira commands and workflow for White bug analysis
 ---
 
 # Jira Commands Reference
 
 ## Jira Project
 
-- **Project Key:** `HUB`
-- **Board:** Firebolt HUB
-- **Server:** https://redventures.atlassian.net
+- **Project Key:** `PROJ`
+- **Board:** White PROJ
+- **Server:** https://whitecompany.atlassian.net
 
 ## Common Commands
 
@@ -18,15 +18,15 @@ description: Jira commands and workflow for Firebolt bug analysis
 make list-tickets
 ```
 
-Fetches all open HUB tickets updated in the last 30 days and creates/updates local directories:
-- `tickets/HUB/bug/HUB-XXXX/`
-- `tickets/HUB/feature/HUB-XXXX/`
-- `tickets/HUB/task/HUB-XXXX/`
+Fetches all open PROJ tickets updated in the last 30 days and creates/updates local directories:
+- `tickets/PROJ/bug/PROJ-XXXX/`
+- `tickets/PROJ/feature/PROJ-XXXX/`
+- `tickets/PROJ/task/PROJ-XXXX/`
 
 ### Prepare Ticket for Analysis
 
 ```bash
-make prepare-ticket TICKET=HUB-1234
+make prepare-ticket TICKET=PROJ-1234
 ```
 
 Orchestrates:
@@ -38,7 +38,7 @@ Orchestrates:
 ### Sync Ticket (Manual)
 
 ```bash
-make sync-ticket TICKET=HUB-1234
+make sync-ticket TICKET=PROJ-1234
 ```
 
 Syncs ticket with Jira:
@@ -54,7 +54,7 @@ Options:
 ### Post Analysis to Jira
 
 ```bash
-make post-analysis TICKET=HUB-1234
+make post-analysis TICKET=PROJ-1234
 ```
 
 Posts pending analysis to Jira:
@@ -68,7 +68,7 @@ Options:
 ### Post Resolution Comment
 
 ```bash
-make post-resolution TICKET=HUB-1234
+make post-resolution TICKET=PROJ-1234
 ```
 
 Posts `resolucao.md` to Jira as final resolution comment.
@@ -129,7 +129,7 @@ Comments are detected as resolution confirmations if they contain:
 ## File Structure
 
 ```
-tickets/HUB/{category}/HUB-XXXX/
+tickets/PROJ/{category}/PROJ-XXXX/
 ├── readme.md               # Jira ticket data (auto-updated)
 ├── state.json             # State machine status
 ├── analysis-01.md         # First AI analysis
@@ -145,10 +145,10 @@ tickets/HUB/{category}/HUB-XXXX/
 | Command | Description |
 |---------|-------------|
 | `make list-tickets` | List open Jira tickets |
-| `make prepare-ticket TICKET=HUB-XXXX` | Prepare ticket for analysis |
-| `make sync-ticket TICKET=HUB-XXXX` | Sync ticket with Jira |
-| `make post-analysis TICKET=HUB-XXXX` | Post analysis to Jira |
-| `make post-resolution TICKET=HUB-XXXX` | Post resolution to Jira |
+| `make prepare-ticket TICKET=PROJ-XXXX` | Prepare ticket for analysis |
+| `make sync-ticket TICKET=PROJ-XXXX` | Sync ticket with Jira |
+| `make post-analysis TICKET=PROJ-XXXX` | Post analysis to Jira |
+| `make post-resolution TICKET=PROJ-XXXX` | Post resolution to Jira |
 
 ## Best Practices
 
@@ -161,5 +161,5 @@ tickets/HUB/{category}/HUB-XXXX/
 
 ## Related Files
 
-- [`.cursor/skills/skill-firebolt-bug-analysis/SKILL.md`](../skills/skill-firebolt-bug-analysis/SKILL.md) - Bug analysis workflow
+- [`.cursor/skills/skill-white-bug-analysis/SKILL.md`](../skills/skill-white-bug-analysis/SKILL.md) - Bug analysis workflow
 - [`docs/ciclo-resolucao.md`](../../docs/ciclo-resolucao.md) - State machine documentation

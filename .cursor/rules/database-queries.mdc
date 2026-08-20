@@ -1,12 +1,12 @@
 ---
-description: DynamoDB query patterns and schema for Firebolt
+description: DynamoDB query patterns and schema for White
 ---
 
-# Firebolt DynamoDB Schema and Query Patterns
+# White DynamoDB Schema and Query Patterns
 
 ## Table Information
 
-- **Table Name:** `onze-firebolt-main-dev` (dev), `onze-firebolt-main-prd` (prod)
+- **Table Name:** `white-main-dev` (dev), `white-main-prd` (prod)
 - **Region:** `sa-east-1`
 - **Primary Key:** `PK` (partition key) + `SK` (sort key)
 

@@ -12,7 +12,7 @@ O Dev Pipeline Orchestrator estava usando as skills originais do Cursor (`skill-
 ### Erro Típico
 
 ```
-FileNotFoundError: [Errno 2] No such file or directory: 'pipelines/stories/HUB-436/.tasks-proposed.json'
+FileNotFoundError: [Errno 2] No such file or directory: 'pipelines/stories/PROJ-436/.tasks-proposed.json'
 ```
 
 **Causa:** As skills originais não garantiam a criação dos arquivos nos caminhos esperados pelo pipeline.
@@ -92,7 +92,7 @@ Write(path=output_file, contents=json.dumps(payload))
 **Depois:** Paths fixos baseados em convenção:
 
 ```
-tickets/HUB/
+tickets/PROJ/
 ├── stories/{story_key}/
 │   ├── .story-plan.md         # pipeline-story-analyzer
 │   └── .tasks-proposed.json   # pipeline-task-breaker
@@ -136,7 +136,7 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 
 **Antes:**
 ```
-1. Pipeline: "Execute @skill-jira-task-creator quebrar HUB-436"
+1. Pipeline: "Execute @skill-jira-task-creator quebrar PROJ-436"
 2. Usuário: Executa no Cursor
 3. Skill: Pode ou não gerar arquivo
 4. Pipeline: "Onde está o arquivo?" ← ERRO se não existe
@@ -144,9 +144,9 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 
 **Depois:**
 ```
-1. Pipeline: "Execute @pipeline-task-breaker quebrar HUB-436"
+1. Pipeline: "Execute @pipeline-task-breaker quebrar PROJ-436"
 2. Usuário: Executa no Cursor
-3. Skill: SEMPRE gera pipelines/stories/HUB-436/.tasks-proposed.json
+3. Skill: SEMPRE gera pipelines/stories/PROJ-436/.tasks-proposed.json
 4. Pipeline: Lê arquivo (path conhecido, arquivo garantido)
 ```
 
@@ -154,7 +154,7 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 
 **Antes:**
 ```
-1. Pipeline: "Execute @skill-task-planner planejar HUB-437"
+1. Pipeline: "Execute @skill-task-planner planejar PROJ-437"
 2. Skill: Gera plano em path flexível
 3. Skill: Roda pipeline-plan-validator automaticamente (quando acoplado ao task-planner)
 4. Pipeline: "Onde está o plano?"
@@ -162,8 +162,8 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 
 **Depois:**
 ```
-1. Pipeline: "Execute @pipeline-task-planner planejar HUB-437"
-2. Skill: SEMPRE gera pipelines/tasks/HUB-437/.plan.md
+1. Pipeline: "Execute @pipeline-task-planner planejar PROJ-437"
+2. Skill: SEMPRE gera pipelines/tasks/PROJ-437/.plan.md
 3. Pipeline: Lê plano
 4. Pipeline: Chama @pipeline-plan-validator separadamente
 ```
@@ -183,7 +183,7 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 1. Pipeline: Roda linters → salva .review-data.json
 2. Pipeline: "Execute @pipeline-review-backend analisar .review-data.json"
 3. Skill: Lê .review-data.json (NÃO roda linters)
-4. Skill: SEMPRE gera pipelines/tasks/HUB-437/.review-report.md
+4. Skill: SEMPRE gera pipelines/tasks/PROJ-437/.review-report.md
 ```
 
 ---
@@ -215,16 +215,16 @@ expected_output = f"pipelines/stories/{story_key}/.tasks-proposed.json"
 **Nada muda!** O fluxo é o mesmo:
 
 ```bash
-make dev-pipeline STORY=HUB-436
+make dev-pipeline STORY=PROJ-436
 ```
 
 **Mas agora as instruções mostram:**
 ```
 Execute no Cursor:
-  @pipeline-task-breaker quebrar HUB-436
+  @pipeline-task-breaker quebrar PROJ-436
   
 O arquivo será criado em:
-  pipelines/stories/HUB-436/.tasks-proposed.json
+  pipelines/stories/PROJ-436/.tasks-proposed.json
 ```
 
 ### Para Mantenedores do Pipeline
@@ -298,7 +298,7 @@ ls -la ~/.cursor/skills/pipeline-task-breaker/
 
 **Erro:**
 ```
-FileNotFoundError: pipelines/stories/HUB-436/.tasks-proposed.json
+FileNotFoundError: pipelines/stories/PROJ-436/.tasks-proposed.json
 ```
 
 **Causa:** Skill não executou Write tool.
@@ -311,8 +311,8 @@ FileNotFoundError: pipelines/stories/HUB-436/.tasks-proposed.json
 
 **Erro:**
 ```
-Expected: pipelines/tasks/HUB-437/.plan.md
-Got: HUB-437.plan.md
+Expected: pipelines/tasks/PROJ-437/.plan.md
+Got: PROJ-437.plan.md
 ```
 
 **Causa:** Skill antiga (sem prefixo `pipeline-`).

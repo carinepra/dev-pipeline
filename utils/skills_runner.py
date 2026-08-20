@@ -43,7 +43,7 @@ class SkillsRunner:
           5. Retorna path do plano
 
         Args:
-            story_key: Issue key (ex: HUB-1234)
+            story_key: Issue key (ex: PROJ-1234)
             story_data: Dados da história (já fetched)
 
         Returns:
@@ -105,7 +105,7 @@ class SkillsRunner:
           4. Lê JSON e retorna
 
         Args:
-            story_key: Issue key (ex: HUB-1234)
+            story_key: Issue key (ex: PROJ-1234)
 
         Returns:
             {"tasks": [{"summary": "...", "type": "backend", "estimate": "3h"}, ...]}
@@ -216,8 +216,8 @@ class SkillsRunner:
         Instrui usuário a executar pipeline-task-planner.
 
         Args:
-            task_key: Task key (ex: HUB-1235)
-            story_key: Parent story key (ex: HUB-1234)
+            task_key: Task key (ex: PROJ-1235)
+            story_key: Parent story key (ex: PROJ-1234)
 
         Returns:
             Path do .plan.md gerado
@@ -266,7 +266,7 @@ class SkillsRunner:
         3. Retorna: plano já melhorado
 
         Args:
-            task_key: Key da task (ex: "HUB-1236")
+            task_key: Key da task (ex: "PROJ-1236")
             story_key: Key da história pai
 
         Returns:
@@ -329,7 +329,7 @@ class SkillsRunner:
         Instrui usuário a executar task-planner após criação da task no Jira.
         
         Args:
-            task_key: Jira key da task (ex: HUB-XXX) - já renomeado após create_issue
+            task_key: Jira key da task (ex: PROJ-XXX) - já renomeado após create_issue
             story_key: Parent story (opcional)
             context_file: Path do arquivo com contexto coletado
         
@@ -752,7 +752,7 @@ class SkillsRunner:
         Prioriza alterações reais sobre descrição Jira.
         
         Args:
-            story_key: Story key (ex: HUB-542)
+            story_key: Story key (ex: PROJ-542)
             files_changed: Lista completa de arquivos modificados em TODAS PRs
             critical_diffs: Dict file_path -> diff content (apenas arquivos críticos)
             db_changes: Lista de alterações de BD detectadas

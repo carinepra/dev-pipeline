@@ -16,7 +16,7 @@ def get_repo_info_from_component(
 
     Args:
         component: Component da task (Front, Back, Infra, Docs, etc)
-        project_key: Projeto Jira (ex: "HUB"). Se None, usa default_project.
+        project_key: Projeto Jira (ex: "PROJ"). Se None, usa default_project.
 
     Returns:
         Dict com 'org', 'repo', 'url', 'local_path', 'id', 'type'
@@ -42,9 +42,9 @@ def get_repo_info_from_component(
         repo = resolve_component_to_repo(default, component)
 
     return {
-        "org": repo.get("org", "RedVentures"),
+        "org": repo.get("org", "WhiteCompany"),
         "repo": repo["github_repo"],
-        "url": repo.get("url", f"https://github.com/{repo.get('org', 'RedVentures')}/{repo['github_repo']}"),
+        "url": repo.get("url", f"https://github.com/{repo.get('org', 'WhiteCompany')}/{repo['github_repo']}"),
         "local_path": repo["local_path"],
         "id": repo["id"],
         "type": repo.get("type", "backend"),

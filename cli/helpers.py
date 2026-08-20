@@ -363,7 +363,7 @@ def cmd_finalize(
     5. Cleanup automático
 
     Args:
-        story_key: Story key (ex: HUB-542)
+        story_key: Story key (ex: PROJ-542)
         state_dir: State directory
         log_dir: Log directory
         persistence: PipelineState instance

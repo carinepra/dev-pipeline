@@ -42,7 +42,7 @@ class PipelineValidators:
         Pergunta quais repos serão impactados, lendo opções do config.
 
         Args:
-            project_key: Projeto Jira (ex: "HUB"). Se None, mostra todos os repos.
+            project_key: Projeto Jira (ex: "PROJ"). Se None, mostra todos os repos.
 
         Returns:
             Lista de repo IDs selecionados.
@@ -82,7 +82,7 @@ class PipelineValidators:
         Pergunta qual projeto Jira usar (para TASK=NEW).
 
         Returns:
-            Project key (ex: "HUB").
+            Project key (ex: "PROJ").
         """
         from utils.config import list_project_keys, get_project_config, get_default_project
 
@@ -297,14 +297,14 @@ class PipelineValidators:
         Pergunta qual repositório específico usar para uma task.
 
         Chamado quando o component Jira (ex: "Front", "Back") mapeia para mais de
-        um repo do mesmo tipo no projeto (ex: firebolt-frontend e dashboard-frontend).
+        um repo do mesmo tipo no projeto (ex: white-frontend e dashboard-frontend).
 
         Args:
-            project_key: Ex: "HUB"
+            project_key: Ex: "PROJ"
             component: Component da task no Jira (ex: "Front", "Back")
 
         Returns:
-            Repo ID selecionado (ex: "firebolt-frontend"), ou None se cancelado.
+            Repo ID selecionado (ex: "white-frontend"), ou None se cancelado.
         """
         from utils.config import (
             get_repos_by_type,

@@ -24,8 +24,8 @@ def cmd_next(
     Avança para o próximo estágio (v2.0).
 
     Examples:
-        make dev-pipeline-next STORY=HUB-542
-        make dev-pipeline-next TASK=HUB-645
+        make dev-pipeline-next STORY=PROJ-542
+        make dev-pipeline-next TASK=PROJ-645
     """
     try:
         resolved_story, resolved_task, pipeline_type = resolve_pipeline_key(

@@ -30,9 +30,9 @@ description: Gera documentação técnica para o Dev Pipeline Orchestrator. Lê 
 {PIPELINE_ROOT}/pipelines/tasks/{story_key}/.doc-gen-data.json
 ```
 
-**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `onze-dev-pipeline/`, partindo do workspace root.
+**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `dev-pipeline/`, partindo do workspace root.
 
-**Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+**Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 
 **SEMPRE use o caminho COMPLETO ao chamar a ferramenta Read:**
 ```python
@@ -47,7 +47,7 @@ O orquestrador já forneceu `.doc-gen-data.json`:
 
 ```json
 {
-  "story_key": "HUB-542",
+  "story_key": "PROJ-542",
   "files_changed": [
     "src/api/forms/router.py",
     "migrations/2024_03_add_deleted_at.sql",
@@ -73,7 +73,7 @@ O orquestrador já forneceu `.doc-gen-data.json`:
   ],
   "pr_descriptions": [
     {
-      "task_key": "HUB-645",
+      "task_key": "PROJ-645",
       "pr_url": "https://github.com/org/repo/pull/789",
       "title": "Remove form validation endpoint",
       "body": "Removes POST /validate endpoint and adds soft delete logic...",
@@ -87,7 +87,7 @@ O orquestrador já forneceu `.doc-gen-data.json`:
   },
   "tasks": [
     {
-      "jira_key": "HUB-645",
+      "jira_key": "PROJ-645",
       "summary": "Backend: remover endpoint",
       "pr_url": "..."
     }
@@ -136,7 +136,7 @@ TASKS_DIR = paths_config["tasks_dir"]
 # ============================================================
 
 # O usuário passa o path como argumento ou está em pipelines/tasks/{task}/
-doc_gen_file = Path(f"{TASKS_DIR}/HUB-542/.doc-gen-data.json")  # path exemplo
+doc_gen_file = Path(f"{TASKS_DIR}/PROJ-542/.doc-gen-data.json")  # path exemplo
 
 with open(doc_gen_file) as f:
     data = json.load(f)
@@ -152,7 +152,7 @@ tasks = data["tasks"]
 
 **Mostrar resumo:**
 ```
-📚 Documentando História Completa: HUB-542
+📚 Documentando História Completa: PROJ-542
 
 📊 Dados coletados:
    • Arquivos modificados: 15
@@ -376,7 +376,7 @@ if "refactor" in " ".join(pr["title"].lower() for pr in pr_descriptions):
 **Path de output:**
 ```python
 # Docs repo (consultar local_path do repo type=docs em .pipeline-config.json)
-docs_repo = Path("../onze-docs-tech")  # ver config para path correto
+docs_repo = Path("../white-docs-tech")  # ver config para path correto
 output_path = docs_repo / "docs" / f"{story_key}-technical-documentation.md"
 
 # OU fallback local
@@ -429,14 +429,14 @@ Após gerar documentação:
 ## Exemplo de Documentação Gerada
 
 ```markdown
-# HUB-542: Remover Formulário de Cadastro
+# PROJ-542: Remover Formulário de Cadastro
 
 ## 📋 Contexto
 
 Remoção do formulário de cadastro do portal. Durante implementação, foi decidido usar soft delete ao invés de deleção física para manter histórico auditável.
 
-**Story:** [HUB-542](<JIRA_URL>/browse/<PROJECT>-542)
-**Tasks:** [HUB-645](link), [HUB-646](link), [HUB-647](link)
+**Story:** [PROJ-542](<JIRA_URL>/browse/<PROJECT>-542)
+**Tasks:** [PROJ-645](link), [PROJ-646](link), [PROJ-647](link)
 
 ---
 
@@ -494,7 +494,7 @@ class Form(Base):
 
 ### ~~`POST /api/forms/validate`~~ (DEPRECATED)
 
-**Status:** Removido na PR #789 (HUB-645)
+**Status:** Removido na PR #789 (PROJ-645)
 **Motivo:** Validação movida para backend service
 **Migration Path:** Use `FormService.validate()` diretamente
 
@@ -542,8 +542,8 @@ SELECT * FROM forms WHERE user_id = ? AND deleted_at IS NULL;
 
 ## 🔗 Referências
 
-- Story: [HUB-542](<JIRA_URL>/browse/<PROJECT>-542)
-- Tasks: [HUB-645](link), [HUB-646](link), [HUB-647](link)
+- Story: [PROJ-542](<JIRA_URL>/browse/<PROJECT>-542)
+- Tasks: [PROJ-645](link), [PROJ-646](link), [PROJ-647](link)
 - PRs: [#789](link), [#790](link), [#791](link)
 - Arquivos modificados: 15 arquivo(s)
 

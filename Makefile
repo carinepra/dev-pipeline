@@ -77,44 +77,44 @@ dev-pipeline-help:  ## Show quick help for dev-pipeline commands
 	@echo "📝 Most used commands:"
 	@echo ""
 	@echo "  Start new pipeline:"
-	@echo "    make dev-pipeline STORY=HUB-542              (story pipeline)"
-	@echo "    make dev-pipeline TASK=HUB-645               (task pipeline)"
+	@echo "    make dev-pipeline STORY=PROJ-542              (story pipeline)"
+	@echo "    make dev-pipeline TASK=PROJ-645               (task pipeline)"
 	@echo "    make dev-pipeline TASK=NEW                   (create new task)"
-	@echo "    make dev-pipeline TASK=NEW STORY=HUB-542     (new task in story)"
+	@echo "    make dev-pipeline TASK=NEW STORY=PROJ-542     (new task in story)"
 	@echo ""
 	@echo "  Resume interrupted pipeline:"
-	@echo "    make dev-pipeline-resume STORY=HUB-542      (or TASK=HUB-645)"
+	@echo "    make dev-pipeline-resume STORY=PROJ-542      (or TASK=PROJ-645)"
 	@echo ""
 	@echo "  Advance to next stage:"
 	@echo "    make dev-pipeline-next                       (auto-detect)"
-	@echo "    make dev-pipeline-next STORY=HUB-542         (or TASK=HUB-645)"
+	@echo "    make dev-pipeline-next STORY=PROJ-542         (or TASK=PROJ-645)"
 	@echo ""
 	@echo "  Go back to previous stage:"
 	@echo "    make dev-pipeline-previous                   (auto-detect)"
-	@echo "    make dev-pipeline-previous STORY=HUB-542     (or TASK=HUB-645)"
+	@echo "    make dev-pipeline-previous STORY=PROJ-542     (or TASK=PROJ-645)"
 	@echo ""
 	@echo "  Finalize story (docs + cleanup):"
-	@echo "    make dev-pipeline-finalize STORY=HUB-1234"
+	@echo "    make dev-pipeline-finalize STORY=PROJ-1234"
 	@echo ""
 	@echo "  View active work:"
 	@echo "    make dev-pipeline-list"
-	@echo "    make dev-pipeline-list STORY=HUB-1234"
+	@echo "    make dev-pipeline-list STORY=PROJ-1234"
 	@echo "    make dev-pipeline-list STATE=IMPLEMENTING"
-	@echo "    make dev-pipeline-status STORY=HUB-1234"
+	@echo "    make dev-pipeline-status STORY=PROJ-1234"
 	@echo ""
-	@echo "⚠️  Remember: Use STORY=<KEY> format (e.g. HUB-1234, INVEST-100)"
+	@echo "⚠️  Remember: Use STORY=<KEY> format (e.g. PROJ-1234, INVEST-100)"
 	@echo ""
 
-dev-pipeline:  ## Start pipeline (v2.0). Usage: make dev-pipeline STORY=HUB-542 or TASK=HUB-645 or TASK=NEW [DRY_RUN=true]
+dev-pipeline:  ## Start pipeline (v2.0). Usage: make dev-pipeline STORY=PROJ-542 or TASK=PROJ-645 or TASK=NEW [DRY_RUN=true]
 	@if [ -z "$(STORY)" ] && [ -z "$(TASK)" ]; then \
 		echo "❌ Error: STORY or TASK parameter required"; \
 		echo ""; \
 		echo "📝 Correct usage:"; \
-		echo "   make dev-pipeline STORY=HUB-542              (story pipeline)"; \
-		echo "   make dev-pipeline TASK=HUB-645               (task pipeline)"; \
+		echo "   make dev-pipeline STORY=PROJ-542              (story pipeline)"; \
+		echo "   make dev-pipeline TASK=PROJ-645               (task pipeline)"; \
 		echo "   make dev-pipeline TASK=NEW                   (create new task)"; \
-		echo "   make dev-pipeline TASK=NEW STORY=HUB-542     (new task in story)"; \
-		echo "   make dev-pipeline STORY=HUB-542 DRY_RUN=true"; \
+		echo "   make dev-pipeline TASK=NEW STORY=PROJ-542     (new task in story)"; \
+		echo "   make dev-pipeline STORY=PROJ-542 DRY_RUN=true"; \
 		echo ""; \
 		exit 1; \
 	fi
@@ -124,24 +124,24 @@ dev-pipeline:  ## Start pipeline (v2.0). Usage: make dev-pipeline STORY=HUB-542 
 dev-pipeline-start:  ## Alias for dev-pipeline (v2.0)
 	$(MAKE) dev-pipeline $(if $(STORY),STORY=$(STORY),) $(if $(TASK),TASK=$(TASK),) $(if $(DRY_RUN),DRY_RUN=$(DRY_RUN),)
 
-dev-pipeline-resume:  ## Resume paused pipeline (v2.0). Usage: make dev-pipeline-resume STORY=HUB-542 or TASK=HUB-645
+dev-pipeline-resume:  ## Resume paused pipeline (v2.0). Usage: make dev-pipeline-resume STORY=PROJ-542 or TASK=PROJ-645
 	@if [ -z "$(STORY)" ] && [ -z "$(TASK)" ]; then \
 		echo "❌ Error: STORY or TASK parameter required"; \
 		echo ""; \
 		echo "📝 Correct usage:"; \
-		echo "   make dev-pipeline-resume STORY=HUB-542"; \
-		echo "   make dev-pipeline-resume TASK=HUB-645"; \
+		echo "   make dev-pipeline-resume STORY=PROJ-542"; \
+		echo "   make dev-pipeline-resume TASK=PROJ-645"; \
 		echo ""; \
 		exit 1; \
 	fi
 	$(check_venv)
 	$(PYTHON) cli/main.py resume $(if $(STORY),--story $(STORY),) $(if $(TASK),--task $(TASK),)
 
-dev-pipeline-status:  ## Show status (v2.0). Usage: make dev-pipeline-status [STORY=HUB-542] [TASK=HUB-645]
+dev-pipeline-status:  ## Show status (v2.0). Usage: make dev-pipeline-status [STORY=PROJ-542] [TASK=PROJ-645]
 	$(check_venv)
 	$(PYTHON) cli/main.py status $(if $(STORY),--story $(STORY),) $(if $(TASK),--task $(TASK),)
 
-dev-pipeline-list:  ## List all stories and tasks. Usage: make dev-pipeline-list [STORY=HUB-1234] [STATE=IMPLEMENTING]
+dev-pipeline-list:  ## List all stories and tasks. Usage: make dev-pipeline-list [STORY=PROJ-1234] [STATE=IMPLEMENTING]
 	$(check_venv)
 	$(PYTHON) cli/main.py list $(if $(STORY),--story $(STORY),) $(if $(STATE),--state $(STATE),)
 
@@ -149,25 +149,25 @@ dev-pipeline-list-stories:  ## List all active stories with summary
 	$(check_venv)
 	$(PYTHON) cli/main.py list-stories
 
-dev-pipeline-list-tasks:  ## List all tasks across all stories. Usage: make dev-pipeline-list-tasks [STORY=HUB-1234] [STATE=PENDING]
+dev-pipeline-list-tasks:  ## List all tasks across all stories. Usage: make dev-pipeline-list-tasks [STORY=PROJ-1234] [STATE=PENDING]
 	$(check_venv)
 	$(PYTHON) cli/main.py list-tasks $(if $(STORY),--story $(STORY),) $(if $(STATE),--state $(STATE),)
 
-dev-pipeline-next:  ## Advance to next stage (v2.0). Usage: make dev-pipeline-next [STORY=HUB-542] [TASK=HUB-645]
+dev-pipeline-next:  ## Advance to next stage (v2.0). Usage: make dev-pipeline-next [STORY=PROJ-542] [TASK=PROJ-645]
 	$(check_venv)
 	$(PYTHON) cli/main.py next $(if $(STORY),--story $(STORY),) $(if $(TASK),--task $(TASK),)
 
-dev-pipeline-previous:  ## Go back to previous stage (v2.0). Usage: make dev-pipeline-previous [STORY=HUB-542] [TASK=HUB-645]
+dev-pipeline-previous:  ## Go back to previous stage (v2.0). Usage: make dev-pipeline-previous [STORY=PROJ-542] [TASK=PROJ-645]
 	$(check_venv)
 	$(PYTHON) cli/main.py previous $(if $(STORY),--story $(STORY),) $(if $(TASK),--task $(TASK),)
 
-dev-pipeline-goto:  ## Go to specific stage. Usage: make dev-pipeline-goto STORY=HUB-1234 STAGE=review_changes (or TASK=)
+dev-pipeline-goto:  ## Go to specific stage. Usage: make dev-pipeline-goto STORY=PROJ-1234 STAGE=review_changes (or TASK=)
 	@if [ -z "$(STAGE)" ]; then \
 		echo "❌ Error: STAGE parameter required"; \
 		echo ""; \
 		echo "📝 Correct usage:"; \
-		echo "   make dev-pipeline-goto STORY=HUB-1234 STAGE=story_analysis"; \
-		echo "   make dev-pipeline-goto TASK=HUB-645 STAGE=task_planning"; \
+		echo "   make dev-pipeline-goto STORY=PROJ-1234 STAGE=story_analysis"; \
+		echo "   make dev-pipeline-goto TASK=PROJ-645 STAGE=task_planning"; \
 		echo ""; \
 		exit 1; \
 	fi
@@ -181,7 +181,7 @@ dev-pipeline-goto:  ## Go to specific stage. Usage: make dev-pipeline-goto STORY
 		exit 1; \
 	fi
 
-dev-pipeline-cancel:  ## Cancel pipeline. Usage: make dev-pipeline-cancel STORY=HUB-1234 (or TASK=)
+dev-pipeline-cancel:  ## Cancel pipeline. Usage: make dev-pipeline-cancel STORY=PROJ-1234 (or TASK=)
 	$(check_venv)
 	@if [ -n "$(STORY)" ]; then \
 		$(PYTHON) cli/main.py cancel --story $(STORY); \
@@ -189,15 +189,15 @@ dev-pipeline-cancel:  ## Cancel pipeline. Usage: make dev-pipeline-cancel STORY=
 		$(PYTHON) cli/main.py cancel --task $(TASK); \
 	else \
 		echo "❌ Error: STORY or TASK required"; \
-		echo "   make dev-pipeline-cancel STORY=HUB-1234"; \
-		echo "   make dev-pipeline-cancel TASK=HUB-645"; \
+		echo "   make dev-pipeline-cancel STORY=PROJ-1234"; \
+		echo "   make dev-pipeline-cancel TASK=PROJ-645"; \
 		exit 1; \
 	fi
 
-dev-pipeline-delete:  ## Delete local pipeline data for a task (state + context files). Usage: make dev-pipeline-delete TASK=HUB-645
+dev-pipeline-delete:  ## Delete local pipeline data for a task (state + context files). Usage: make dev-pipeline-delete TASK=PROJ-645
 	@if [ -z "$(TASK)" ]; then \
 		echo "❌ Error: TASK parameter required"; \
-		echo "   Usage: make dev-pipeline-delete TASK=HUB-645"; \
+		echo "   Usage: make dev-pipeline-delete TASK=PROJ-645"; \
 		exit 1; \
 	fi
 	@STATE_FILE=".pipeline-state/$(TASK)-task.json"; \
@@ -242,7 +242,7 @@ dev-pipeline-delete:  ## Delete local pipeline data for a task (state + context 
 		echo "↩️  Operação cancelada. Nenhum arquivo foi removido."; \
 	fi
 
-dev-pipeline-unlock:  ## Force unlock. Usage: make dev-pipeline-unlock STORY=HUB-1234 (or TASK=)
+dev-pipeline-unlock:  ## Force unlock. Usage: make dev-pipeline-unlock STORY=PROJ-1234 (or TASK=)
 	$(check_venv)
 	@if [ -n "$(STORY)" ]; then \
 		$(PYTHON) cli/main.py unlock --story $(STORY); \
@@ -250,12 +250,12 @@ dev-pipeline-unlock:  ## Force unlock. Usage: make dev-pipeline-unlock STORY=HUB
 		$(PYTHON) cli/main.py unlock --task $(TASK); \
 	else \
 		echo "❌ Error: STORY or TASK required"; \
-		echo "   make dev-pipeline-unlock STORY=HUB-1234"; \
-		echo "   make dev-pipeline-unlock TASK=HUB-645"; \
+		echo "   make dev-pipeline-unlock STORY=PROJ-1234"; \
+		echo "   make dev-pipeline-unlock TASK=PROJ-645"; \
 		exit 1; \
 	fi
 
-dev-pipeline-validate:  ## Validate state JSON (v2.0). Usage: make dev-pipeline-validate STORY=HUB-1234 (or TASK=)
+dev-pipeline-validate:  ## Validate state JSON (v2.0). Usage: make dev-pipeline-validate STORY=PROJ-1234 (or TASK=)
 	$(check_venv)
 	@if [ -n "$(STORY)" ]; then \
 		$(PYTHON) cli/main.py validate --story $(STORY); \
@@ -263,17 +263,17 @@ dev-pipeline-validate:  ## Validate state JSON (v2.0). Usage: make dev-pipeline-
 		$(PYTHON) cli/main.py validate --task $(TASK); \
 	else \
 		echo "❌ Error: STORY or TASK required"; \
-		echo "   make dev-pipeline-validate STORY=HUB-1234"; \
-		echo "   make dev-pipeline-validate TASK=HUB-645"; \
+		echo "   make dev-pipeline-validate STORY=PROJ-1234"; \
+		echo "   make dev-pipeline-validate TASK=PROJ-645"; \
 		exit 1; \
 	fi
 
-dev-pipeline-finalize:  ## Finalize story: docs + cleanup (v1.6.0). Usage: make dev-pipeline-finalize STORY=HUB-1234
+dev-pipeline-finalize:  ## Finalize story: docs + cleanup (v1.6.0). Usage: make dev-pipeline-finalize STORY=PROJ-1234
 	@if [ -z "$(STORY)" ]; then \
 		echo "❌ Error: STORY parameter required"; \
 		echo ""; \
 		echo "📝 Correct usage:"; \
-		echo "   make dev-pipeline-finalize STORY=HUB-542"; \
+		echo "   make dev-pipeline-finalize STORY=PROJ-542"; \
 		echo ""; \
 		echo "📚 This command will:"; \
 		echo "   1. Collect real changes from all merged PRs"; \
@@ -295,7 +295,7 @@ init:  ## Initialize dev environment (install deps + setup git hooks)
 	@echo "   Next steps:"
 	@echo "   1. Copy .env.modelo to .env and fill in credentials"
 	@echo "   2. Run 'make dev-pipeline-help' for available commands"
-	@echo "   3. Run 'make dev-pipeline TASK=HUB-XXX' to start a pipeline"
+	@echo "   3. Run 'make dev-pipeline TASK=PROJ-XXX' to start a pipeline"
 
 check:  ## Run all checks (lint + test)
 	$(MAKE) lint

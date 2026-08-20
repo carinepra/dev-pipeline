@@ -1,1 +1,1 @@
-"""Tests for onze-dev-pipeline."""
+"""Tests for dev-pipeline."""

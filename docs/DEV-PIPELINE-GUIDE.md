@@ -11,7 +11,7 @@ O Dev Pipeline Orchestrator automatiza o ciclo completo de desenvolvimento: Hist
 - 🧠 **Skills Cursor** (manual): análise de histórias, planejamento, review de código, interpretação de comentários
 - ✋ **Validação humana** em 7 pontos críticos (aprovação de tasks, plano, arquivos a commitar, etc)
 
-**Múltiplos projetos Jira e repositórios:** O orquestrador lê `.pipeline-config.json` na raiz do repositório para saber quais projetos Jira e quais repositórios locais usar. Os exemplos abaixo usam `<PROJECT>-1234` como placeholder genérico e `HUB-542` como ilustração concreta; qualquer chave de projeto Jira válida funciona.
+**Múltiplos projetos Jira e repositórios:** O orquestrador lê `.pipeline-config.json` na raiz do repositório para saber quais projetos Jira e quais repositórios locais usar. Os exemplos abaixo usam `<PROJECT>-1234` como placeholder genérico e `PROJ-542` como ilustração concreta; qualquer chave de projeto Jira válida funciona.
 
 ## Quick Start
 
@@ -27,9 +27,9 @@ JIRA_API_TOKEN=seu-token-jira
 GITHUB_TOKEN=ghp_seu-token-github
 
 # (Opcional) Multi-repo setup para linters cross-repo
-FIREBOLT_LOCAL_API=../onze-firebolt-api-online
-FIREBOLT_LOCAL_BACKOFFICE=../onze-firebolt-www-backoffice
-FIREBOLT_LOCAL_DOCS=../onze-docs-tech
+WHITE_LOCAL_API=../white-api
+WHITE_LOCAL_BACKOFFICE=../white-app
+WHITE_LOCAL_DOCS=../white-docs-tech
 ```
 
 **Multi-repo setup (opcional mas recomendado):**
@@ -39,15 +39,15 @@ Se você mantém todos os repositórios do projeto em uma pasta compartilhada:
 ```bash
 # Estrutura:
 repos/
-├── onze-dev-pipeline/              # Orquestrador + estado + artefatos em pipelines/
-├── onze-firebolt-api-online/       # Código da API
-├── onze-firebolt-www-backoffice/   # Código do backoffice
-└── onze-docs-tech/                 # Documentação técnica
+├── dev-pipeline/              # Orquestrador + estado + artefatos em pipelines/
+├── white-api/       # Código da API
+├── white-app/   # Código do backoffice
+└── white-docs-tech/                 # Documentação técnica
 ```
 
 *Os nomes de pastas acima são um exemplo de layout; confira `.pipeline-config.json` para os repositórios e caminhos usados no seu ambiente.*
 
-Configure as variáveis `FIREBOLT_LOCAL_*` no `.env` para que o pipeline rode linters no repo correto (nomes típicos; **os paths reais vêm de `.pipeline-config.json`**):
+Configure as variáveis `WHITE_LOCAL_*` no `.env` para que o pipeline rode linters no repo correto (nomes típicos; **os paths reais vêm de `.pipeline-config.json`**):
 - Frontend tasks → linters rodam no repositório de backoffice configurado
 - Backend tasks → linters rodam no repositório de API configurado
 
@@ -90,7 +90,7 @@ O pipeline guia você através de 9 fases:
 
 4. **IMPLEMENTATION**: Você implementa código seguindo o plano
 
-5. **REVIEW_CHANGES**: Script roda linters (no repo correto via `FIREBOLT_LOCAL_*`) → skill analisa erros → você aprova ou corrige
+5. **REVIEW_CHANGES**: Script roda linters (no repo correto via `WHITE_LOCAL_*`) → skill analisa erros → você aprova ou corrige
 
 6. **GIT_PUBLISH**: Mostra arquivos a commitar → você confirma → branch + commit + push + PR criada
 
@@ -121,8 +121,8 @@ Ver histórias + tasks numa única tela:
 # Panorama completo
 make dev-pipeline-list
 
-# Filtrar por história (exemplo concreto HUB-542; qualquer chave de projeto funciona)
-make dev-pipeline-list STORY=HUB-542
+# Filtrar por história (exemplo concreto PROJ-542; qualquer chave de projeto funciona)
+make dev-pipeline-list STORY=PROJ-542
 
 # Filtrar tasks por estado
 make dev-pipeline-list STATE=IMPLEMENTING
@@ -294,7 +294,7 @@ Se organização usa SSO: autorize o token em `Settings > Developer settings > P
 
 Verifique `.env`:
 ```bash
-JIRA_EMAIL=seu-email@exemplo.com  # não pode ser @redventures.com alias
+JIRA_EMAIL=seu-email@exemplo.com  # não pode ser @whitecompany.com alias
 JIRA_API_TOKEN=ATATT...           # gerar em: id.atlassian.com/manage-profile/security/api-tokens
 ```
 
@@ -348,7 +348,7 @@ tail -f logs/pipeline-<PROJECT>-1234.log
   - **Motivo**: Skills usam Cursor AI (já pago), não OpenAI API adicional
   - **Workaround**: Modo instrucional (pipeline mostra comando, você executa)
 - Múltiplos repos no **mesmo pipeline** não suportado totalmente
-  - **Workaround**: Configure `FIREBOLT_LOCAL_*` para linters cross-repo, ou rodar 1 pipeline por repo
+  - **Workaround**: Configure `WHITE_LOCAL_*` para linters cross-repo, ou rodar 1 pipeline por repo
 - CI check automático **não implementado**
   - **Workaround**: Reviewer vê no GitHub, ou rodar `make ci-report` manualmente
 - Tasks executadas **sequencialmente** (não em paralelo)

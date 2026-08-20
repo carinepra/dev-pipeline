@@ -40,18 +40,18 @@ def test_story_pipeline_init(temp_dirs):
     state_dir, log_dir = temp_dirs
     
     # Criar story pipeline
-    pipeline = StoryPipeline("HUB-999", state_dir, log_dir)
+    pipeline = StoryPipeline("PROJ-999", state_dir, log_dir)
     pipeline.init_new_story()
     
     # Verificar arquivo criado
-    story_file = state_dir / "HUB-999-story.json"
+    story_file = state_dir / "PROJ-999-story.json"
     assert story_file.exists()
     
     # Verificar schema
     data = json.loads(story_file.read_text())
     assert data["version"] == "2.0"
     assert data["pipeline_type"] == "story"
-    assert data["story_key"] == "HUB-999"
+    assert data["story_key"] == "PROJ-999"
     assert data["current_state"] == "story_analysis"
 
 
@@ -59,18 +59,18 @@ def test_task_pipeline_init(temp_dirs):
     """Testa criação de Task Pipeline v2.0."""
     state_dir, log_dir = temp_dirs
 
-    pipeline = TaskPipeline("HUB-998", "HUB-999", state_dir, log_dir)
+    pipeline = TaskPipeline("PROJ-998", "PROJ-999", state_dir, log_dir)
     with patch.object(pipeline, "start_planning"):
         pipeline.init_new_task("Test task", "Back")
 
-    task_file = state_dir / "HUB-998-task.json"
+    task_file = state_dir / "PROJ-998-task.json"
     assert task_file.exists()
 
     data = json.loads(task_file.read_text())
     assert data["version"] == "2.0"
     assert data["pipeline_type"] == "task"
-    assert data["task_key"] == "HUB-998"
-    assert data["story_key"] == "HUB-999"
+    assert data["task_key"] == "PROJ-998"
+    assert data["story_key"] == "PROJ-999"
     assert data["current_state"] == "pending"
 
 
@@ -82,17 +82,17 @@ def test_persistence_list_active(temp_dirs):
     persistence = PipelineState(state_dir)
     
     # Criar múltiplos pipelines
-    story1 = StoryPipeline("HUB-991", state_dir, log_dir)
+    story1 = StoryPipeline("PROJ-991", state_dir, log_dir)
     story1.init_new_story()
     
-    story2 = StoryPipeline("HUB-990", state_dir, log_dir)
+    story2 = StoryPipeline("PROJ-990", state_dir, log_dir)
     story2.init_new_story()
     
-    task1 = TaskPipeline("HUB-989", "HUB-991", state_dir, log_dir)
+    task1 = TaskPipeline("PROJ-989", "PROJ-991", state_dir, log_dir)
     with patch.object(task1, "start_planning"):
         task1.init_new_task("Test task 1", "Back")
 
-    task2 = TaskPipeline("HUB-988", "HUB-991", state_dir, log_dir)
+    task2 = TaskPipeline("PROJ-988", "PROJ-991", state_dir, log_dir)
     with patch.object(task2, "start_planning"):
         task2.init_new_task("Test task 2", "Front")
     
@@ -106,9 +106,9 @@ def test_persistence_list_active(temp_dirs):
     assert len(all_tasks) == 2
     
     # Listar tasks de uma story específica
-    story_tasks = persistence.list_active_tasks(story_key="HUB-991")
+    story_tasks = persistence.list_active_tasks(story_key="PROJ-991")
     assert len(story_tasks) == 2
-    assert all(t["story_key"] == "HUB-991" for t in story_tasks)
+    assert all(t["story_key"] == "PROJ-991" for t in story_tasks)
 
 
 if __name__ == "__main__":

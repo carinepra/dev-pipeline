@@ -285,7 +285,7 @@ class TaskPipeline(BasePipeline):
         self.console.print("[cyan]Criando issue no Jira...[/cyan]")
         try:
             issue_key = create_issue(
-                project_key=context.get("project_key", "HUB"),
+                project_key=context.get("project_key", "PROJ"),
                 summary=context.get("title", ""),
                 description=context.get("description", ""),
                 issue_type="Task",

@@ -34,11 +34,11 @@ def normalize_legacy_path(path: str | Path | None) -> str | None:
     Converte paths antigos para novos (v2.1).
     
     Exemplos:
-        pipelines/stories/HUB-542/.story-plan.md
-        -> pipelines/stories/HUB-542/.story-plan.md
+        pipelines/stories/PROJ-542/.story-plan.md
+        -> pipelines/stories/PROJ-542/.story-plan.md
         
-        data/stories/HUB-542/HUB-645.plan.md
-        -> pipelines/tasks/HUB-645/.plan.md
+        data/stories/PROJ-542/PROJ-645.plan.md
+        -> pipelines/tasks/PROJ-645/.plan.md
         
         data/stories/_standalone/_new-xxx.plan.md
         -> pipelines/tasks/_new-xxx/.plan.md
@@ -85,11 +85,11 @@ def normalize_legacy_path(path: str | Path | None) -> str | None:
                 story_key = first_part
                 return f"pipelines/stories/{story_key}/{filename}"
             else:
-                # É arquivo de task (HUB-645.plan.md ou similar)
+                # É arquivo de task (PROJ-645.plan.md ou similar)
                 if "." in filename:
-                    # Pode ser HUB-645.plan.md ou .plan.md
+                    # Pode ser PROJ-645.plan.md ou .plan.md
                     if _ISSUE_KEY_PREFIX_RE.match(filename) or filename.startswith("_new-"):
-                        # Formato antigo: HUB-645.plan.md
+                        # Formato antigo: PROJ-645.plan.md
                         task_key = filename.split(".")[0]
                         ext = ".".join(filename.split(".")[1:])
                         return f"pipelines/tasks/{task_key}/.{ext}"
@@ -235,7 +235,7 @@ class PipelineState:
         Salva estado com backup automático e lock.
 
         Args:
-            story_key: Issue key (ex: HUB-1234)
+            story_key: Issue key (ex: PROJ-1234)
             data: Dados do estado
 
         Raises:
@@ -380,7 +380,7 @@ class PipelineState:
         Salva Story Pipeline (v2.0) com backup e lock.
         
         Args:
-            story_key: HUB-XXX
+            story_key: PROJ-XXX
             data: Dados do estado da história
         """
         file_path = self.state_dir / f"{story_key}-story.json"
@@ -408,7 +408,7 @@ class PipelineState:
         Carrega Story Pipeline (v2.0) com validação.
         
         Args:
-            story_key: HUB-XXX
+            story_key: PROJ-XXX
         
         Returns:
             Dados do estado ou None se não existir
@@ -462,7 +462,7 @@ class PipelineState:
         Salva Task Pipeline (v2.0) com backup e lock.
         
         Args:
-            task_key: HUB-XXX
+            task_key: PROJ-XXX
             data: Dados do estado da task
         """
         file_path = self.state_dir / f"{task_key}-task.json"
@@ -491,7 +491,7 @@ class PipelineState:
         Carrega Task Pipeline (v2.0) com validação.
         
         Args:
-            task_key: HUB-XXX
+            task_key: PROJ-XXX
         
         Returns:
             Dados do estado ou None se não existir
@@ -519,7 +519,7 @@ class PipelineState:
         MELHORIA #6: Filtro correto por story_key (não prefixo).
         
         Args:
-            story_key: Filtrar tasks de uma história específica (ex: HUB-542)
+            story_key: Filtrar tasks de uma história específica (ex: PROJ-542)
         
         Returns:
             Lista de estados de tasks ativas
@@ -556,7 +556,7 @@ class PipelineState:
         Salva dados de finalização em cache (TTL 1h).
         
         Args:
-            story_key: HUB-XXX
+            story_key: PROJ-XXX
             data: {
                 "all_files_changed": [...],
                 "critical_diffs": {...},

@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for onze-dev-pipeline tests."""
+"""Pytest configuration and fixtures for dev-pipeline tests."""
 
 import os
 import pytest

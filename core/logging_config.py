@@ -11,7 +11,7 @@ def setup_logging(story_key: str, log_dir: Path) -> logging.Logger:
     Setup dual logging: console (Rich) + file (detailed).
 
     Args:
-        story_key: Issue key (ex: HUB-1234)
+        story_key: Issue key (ex: PROJ-1234)
         log_dir: Diretório para salvar logs
 
     Returns:

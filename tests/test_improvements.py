@@ -59,11 +59,11 @@ class TestFase1BugFixes:
         import sys
         from unittest.mock import patch as _patch
 
-        with _patch.object(sys, "argv", ["cli", "finalize", "--story", "HUB-1"]):
+        with _patch.object(sys, "argv", ["cli", "finalize", "--story", "PROJ-1"]):
             from cli.main import parse_args
             args = parse_args()
             assert args.command == "finalize"
-            assert args.story == "HUB-1"
+            assert args.story == "PROJ-1"
 
     def test_1_3_task_discussion_in_goto_valid_states(self):
         """Bug 1.3: task_discussion deve estar em valid_states de cmd_goto."""
@@ -242,8 +242,8 @@ class TestFase4BasePipeline:
         state_dir, log_dir = temp_dirs
         from pipelines.story_pipeline import StoryPipeline
 
-        pipeline = StoryPipeline("HUB-777", state_dir, log_dir)
-        assert pipeline._persist_key == "HUB-777"
+        pipeline = StoryPipeline("PROJ-777", state_dir, log_dir)
+        assert pipeline._persist_key == "PROJ-777"
         assert pipeline._persist_type == "story"
 
     def test_persist_key_task(self, temp_dirs):
@@ -251,8 +251,8 @@ class TestFase4BasePipeline:
         state_dir, log_dir = temp_dirs
         from pipelines.task_pipeline import TaskPipeline
 
-        pipeline = TaskPipeline("HUB-778", "HUB-777", state_dir, log_dir)
-        assert pipeline._persist_key == "HUB-778"
+        pipeline = TaskPipeline("PROJ-778", "PROJ-777", state_dir, log_dir)
+        assert pipeline._persist_key == "PROJ-778"
         assert pipeline._persist_type == "task"
 
 
@@ -267,13 +267,13 @@ class TestFase5Documentation:
     def test_skills_readme_says_12(self):
         """skills/README.md deve mencionar 12 skills."""
         readme = Path(__file__).parent.parent / "skills" / "README.md"
-        content = readme.read_text()
+        content = readme.read_text(encoding="utf-8")
         assert "12 skills" in content, "README ainda diz 10 skills"
 
     def test_skills_readme_lists_all_12(self):
         """skills/README.md deve listar todas 12 pipeline-* skills."""
         readme = Path(__file__).parent.parent / "skills" / "README.md"
-        content = readme.read_text()
+        content = readme.read_text(encoding="utf-8")
         expected = [
             "pipeline-story-analyzer",
             "pipeline-story-planner",

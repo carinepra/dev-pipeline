@@ -13,7 +13,7 @@ def _resolve_jira_base_url() -> str:
         from utils.config import get_jira_base_url
         return get_jira_base_url()
     except Exception:
-        return os.getenv("JIRA_SERVER", "https://redventures.atlassian.net")
+        return os.getenv("JIRA_SERVER", "https://whitecompany.atlassian.net")
 
 JIRA_BASE_URL = _resolve_jira_base_url()
 JIRA_EMAIL = os.getenv("JIRA_EMAIL")
@@ -151,7 +151,7 @@ def create_issue(
     Cria issue no Jira (CRUD puro, sem análise).
 
     Args:
-        project_key: Projeto (ex: "HUB")
+        project_key: Projeto (ex: "PROJ")
         summary: Título da issue
         description: Descrição (string simples OU dict ADF completo)
         issue_type: Tipo (Task, Bug, Story, Sub-task)
@@ -163,7 +163,7 @@ def create_issue(
         dry_run: Se True, não cria de verdade
 
     Returns:
-        Issue key criada (ex: "HUB-1235")
+        Issue key criada (ex: "PROJ-1235")
     """
     if dry_run:
         return f"DRY-{summary[:20]}"
@@ -280,7 +280,7 @@ def update_issue_description(issue_key: str, description: dict[str, Any] | str, 
     Atualiza apenas a descrição de uma issue existente.
 
     Args:
-        issue_key: Key da issue (ex: "HUB-1234")
+        issue_key: Key da issue (ex: "PROJ-1234")
         description: Nova descrição (ADF dict ou string simples)
         dry_run: Se True, não atualiza
     """
@@ -328,8 +328,8 @@ def add_blocking_link(blocking_key: str, blocked_key: str, dry_run: bool = False
     Cria link de bloqueio entre duas issues (blocking_key bloqueia blocked_key).
 
     Args:
-        blocking_key: Issue que bloqueia (ex: "HUB-100")
-        blocked_key: Issue bloqueada (ex: "HUB-101")
+        blocking_key: Issue que bloqueia (ex: "PROJ-100")
+        blocked_key: Issue bloqueada (ex: "PROJ-101")
         dry_run: Se True, não cria
     """
     if dry_run:

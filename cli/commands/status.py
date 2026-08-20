@@ -22,8 +22,8 @@ def cmd_status(
     Show detailed status of story or task pipeline (v2.0).
 
     Examples:
-        make dev-pipeline-status STORY=HUB-542
-        make dev-pipeline-status TASK=HUB-645
+        make dev-pipeline-status STORY=PROJ-542
+        make dev-pipeline-status TASK=PROJ-645
     """
     from rich.panel import Panel
     from rich.table import Table

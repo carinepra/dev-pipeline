@@ -38,8 +38,8 @@ def parse_args():
 
     # start
     p = sub.add_parser("start", help="Start a story or task pipeline")
-    p.add_argument("--story", help="Story key to start (ex: HUB-1234)")
-    p.add_argument("--task", help="Task key to start (ex: HUB-1235) or 'NEW'")
+    p.add_argument("--story", help="Story key to start (ex: PROJ-1234)")
+    p.add_argument("--task", help="Task key to start (ex: PROJ-1235) or 'NEW'")
 
     # resume
     p = sub.add_parser("resume", help="Resume paused pipeline")

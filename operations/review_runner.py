@@ -13,12 +13,12 @@ def resolve_review_cwd(repo_type: str = "", repo_id: str = "") -> Path:
     Tenta em ordem:
     1. Se repo_id fornecido, busca local_path no config.
     2. Se repo_type fornecido, busca primeiro repo desse type no config.
-    3. Fallback para env vars FIREBOLT_LOCAL_* (backward compat).
+    3. Fallback para env vars WHITE_LOCAL_* (backward compat).
     4. Fallback para Path.cwd().
 
     Args:
         repo_type: "backend", "frontend", ou "docs"
-        repo_id: ID do repo no config (ex: "firebolt-backend")
+        repo_id: ID do repo no config (ex: "white-backend")
 
     Returns:
         Path absoluto do repo alvo
@@ -47,9 +47,9 @@ def resolve_review_cwd(repo_type: str = "", repo_id: str = "") -> Path:
             pass
 
     env_map = {
-        "backend": "FIREBOLT_LOCAL_API",
-        "frontend": "FIREBOLT_LOCAL_BACKOFFICE",
-        "docs": "FIREBOLT_LOCAL_DOCS",
+        "backend": "WHITE_LOCAL_API",
+        "frontend": "WHITE_LOCAL_BACKOFFICE",
+        "docs": "WHITE_LOCAL_DOCS",
     }
     env_var = env_map.get(repo_type)
     if env_var:
@@ -107,7 +107,7 @@ def detect_repo_type(cwd: Path | None = None) -> str:
     except Exception:
         pass
 
-    if "api-online" in remote or "ia-firebolt" in remote or "sustentacao" in remote:
+    if "api-online" in remote or "ia-white" in remote or "sustentacao" in remote:
         return "backend"
     elif "backoffice" in remote or "www" in remote:
         return "frontend"

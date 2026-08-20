@@ -81,10 +81,10 @@ def cmd_start(
     Inicia um pipeline (v2.0).
 
     Examples:
-        make dev-pipeline-start STORY=HUB-542
-        make dev-pipeline-start TASK=HUB-645
+        make dev-pipeline-start STORY=PROJ-542
+        make dev-pipeline-start TASK=PROJ-645
         make dev-pipeline-start TASK=NEW
-        make dev-pipeline-start TASK=NEW STORY=HUB-542
+        make dev-pipeline-start TASK=NEW STORY=PROJ-542
     """
     from utils.pipeline_resolver import TASK_NEW_FLAG
 
@@ -211,8 +211,8 @@ def cmd_start_new_task(
 
         if has_parent:
             story_key = text(
-                "Key da história (ex: HUB-542, INVEST-100):",
-                validate=lambda s: bool(__import__('re').match(r'^[A-Z][A-Z0-9]*-\d+$', s.strip().upper())) or "Formato inválido (ex: HUB-542)"
+                "Key da história (ex: PROJ-542, INVEST-100):",
+                validate=lambda s: bool(__import__('re').match(r'^[A-Z][A-Z0-9]*-\d+$', s.strip().upper())) or "Formato inválido (ex: PROJ-542)"
             ).ask()
 
             if not story_key:

@@ -9,13 +9,13 @@ description: Executa 3 rounds de melhoria em planos do Dev Pipeline Orchestrator
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -124,9 +124,9 @@ Antes de adicionar QUALQUER sugestão, perguntar a si mesmo:
 ## Input Esperado
 
 O orquestrador fornece:
-- **Plan file**: Caminho do `.plan.md` (ex: `pipelines/tasks/HUB-437/.plan.md`)
-- **Story key**: Parent story (ex: `HUB-436`)
-- **Task key**: Task sendo planejada (ex: `HUB-437`)
+- **Plan file**: Caminho do `.plan.md` (ex: `pipelines/tasks/PROJ-437/.plan.md`)
+- **Story key**: Parent story (ex: `PROJ-436`)
+- **Task key**: Task sendo planejada (ex: `PROJ-437`)
 
 **Não** pedir o caminho — já foi informado.
 
@@ -243,7 +243,7 @@ Ao final dos 3 rounds, **atualizar o arquivo `.plan.md`** com `StrReplace`.
    - Identificado utilitário existente para W (Round 2)
    - Removida constante desnecessária K (Round 3)
    
-   Arquivo atualizado: pipelines/tasks/HUB-437/.plan.md
+   Arquivo atualizado: pipelines/tasks/PROJ-437/.plan.md
    ```
 
 **Máximo 6 bullets** com só o que mudou (sem recontar análise).

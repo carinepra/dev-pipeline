@@ -95,4 +95,5 @@ logs/*.log
 *.tmp
 *.bak
 .temp/
+*.rar
 

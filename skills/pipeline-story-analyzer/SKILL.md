@@ -11,13 +11,13 @@ description: Análise completa e planejamento estratégico para o Dev Pipeline. 
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -217,7 +217,7 @@ if scope in ["backend", "frontend", "both"]:
     
     config_path = workspace_root / ".pipeline-config.json"
     if not config_path.exists():
-        config_path = workspace_root / "onze-dev-pipeline" / ".pipeline-config.json"
+        config_path = workspace_root / "dev-pipeline" / ".pipeline-config.json"
     
     search_paths = []
     if config_path.exists():

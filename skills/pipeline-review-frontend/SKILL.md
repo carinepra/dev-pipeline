@@ -15,7 +15,7 @@ description: Review de código frontend para o Dev Pipeline Orchestrator. Lê `.
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Código frontend:** Consulte `local_path` do repo frontend em `.pipeline-config.json`
 - **Explore o src/ do repo** conforme path do config
 
@@ -37,7 +37,7 @@ description: Review de código frontend para o Dev Pipeline Orchestrator. Lê `.
 {PIPELINE_ROOT}/pipelines/tasks/{task_key}/.review-data.json
 ```
 
-**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `onze-dev-pipeline/`, partindo do workspace root.
+**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `dev-pipeline/`, partindo do workspace root.
 
 **SEMPRE use o caminho COMPLETO ao chamar a ferramenta Read:**
 ```python
@@ -65,13 +65,13 @@ O orquestrador já forneceu:
 **Se o arquivo não existir:** gerá-lo automaticamente via Shell com `git diff` e linters — **NÃO perguntar ao usuário**.
 
 ```bash
-# Coletar diff (rodar no repo frontend: onze-firebolt-www-backoffice)
-git -C {WORKSPACE_ROOT}/onze-firebolt-www-backoffice diff
-git -C {WORKSPACE_ROOT}/onze-firebolt-www-backoffice diff --cached
+# Coletar diff (rodar no repo frontend: white-app)
+git -C {WORKSPACE_ROOT}/white-app diff
+git -C {WORKSPACE_ROOT}/white-app diff --cached
 
 # Linters
-cd {WORKSPACE_ROOT}/onze-firebolt-www-backoffice && npx eslint --format json src/
-cd {WORKSPACE_ROOT}/onze-firebolt-www-backoffice && npx tsc --noEmit
+cd {WORKSPACE_ROOT}/white-app && npx eslint --format json src/
+cd {WORKSPACE_ROOT}/white-app && npx tsc --noEmit
 ```
 
 Salvar resultado em `{PIPELINE_ROOT}/pipelines/tasks/{task_key}/.review-data.json` e prosseguir.
@@ -270,7 +270,7 @@ Severity: **FAIL** / **WARN** / **PASS** / **A11Y** / **PERF**
 ```markdown
 # Code Review Report — Frontend
 
-**Task:** HUB-437  
+**Task:** PROJ-437  
 **Date:** 2026-03-25  
 **Reviewer:** Pipeline (Automated)
 

@@ -30,9 +30,9 @@ description: Review de documentação técnica para o Dev Pipeline Orchestrator.
 {PIPELINE_ROOT}/pipelines/tasks/{story_key}/.doc-review-data.json
 ```
 
-**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `onze-dev-pipeline/`, partindo do workspace root.
+**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `dev-pipeline/`, partindo do workspace root.
 
-**Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+**Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 
 **SEMPRE use o caminho COMPLETO ao chamar a ferramenta Read:**
 ```python
@@ -47,8 +47,8 @@ O orquestrador fornece `.doc-review-data.json`:
 
 ```json
 {
-  "doc_path": "docs/HUB-542-technical-documentation.md",
-  "story_key": "HUB-542",
+  "doc_path": "docs/PROJ-542-technical-documentation.md",
+  "story_key": "PROJ-542",
   "context": {
     "files_count": 15,
     "tasks_count": 3,
@@ -101,8 +101,8 @@ TASKS_DIR = paths_config["tasks_dir"]
 # ============================================================
 
 # O usuário passa o path como argumento
-# Exemplo: @pipeline-review-documentation analisar pipelines/tasks/HUB-542/.doc-review-data.json
-review_data_file = Path(f"{TASKS_DIR}/HUB-542/.doc-review-data.json")  # path exemplo
+# Exemplo: @pipeline-review-documentation analisar pipelines/tasks/PROJ-542/.doc-review-data.json
+review_data_file = Path(f"{TASKS_DIR}/PROJ-542/.doc-review-data.json")  # path exemplo
 
 with open(review_data_file) as f:
     data = json.load(f)
@@ -115,8 +115,8 @@ context = data["context"]
 **Mostrar resumo:**
 ```
 📊 Review de Documentação
-Story: HUB-542
-Documento: docs/HUB-542-technical-documentation.md
+Story: PROJ-542
+Documento: docs/PROJ-542-technical-documentation.md
 Arquivos: 15
 Tasks: 3
 DB changes: Sim
@@ -233,8 +233,8 @@ checklist.append({
 
 **Item: Título e overview**
 ```python
-# Verificar se documento tem título claro (# HUB-XXX: ...)
-has_title = bool(re.search(r'^# HUB-\d+:', doc_content, re.MULTILINE))
+# Verificar se documento tem título claro (# PROJ-XXX: ...)
+has_title = bool(re.search(r'^# PROJ-\d+:', doc_content, re.MULTILINE))
 
 # Verificar se tem overview/contexto nas primeiras 20 linhas
 first_lines = "\n".join(doc_content.split("\n")[:20])
@@ -281,7 +281,7 @@ checklist[3]["details"] = f"{len(pr_links)} PR(s) linkada(s)" if has_pr_links el
 **Item: Tasks Jira linkadas**
 ```python
 # Verificar se tem links para tasks
-jira_links = re.findall(r'HUB-\d+', doc_content)
+jira_links = re.findall(r'PROJ-\d+', doc_content)
 unique_jira = len(set(jira_links))
 
 # Deve mencionar ao menos metade das tasks
@@ -468,8 +468,8 @@ Este arquivo é para o orquestrador ler:
 
 ```json
 {
-  "story_key": "HUB-542",
-  "doc_path": "docs/HUB-542-technical-documentation.md",
+  "story_key": "PROJ-542",
+  "doc_path": "docs/PROJ-542-technical-documentation.md",
   "score": 9,
   "checklist": [
     {
@@ -533,11 +533,11 @@ Arquivos gerados:
 
 ```bash
 # Chamada pelo orquestrador
-@pipeline-review-documentation analisar pipelines/tasks/HUB-542/.doc-review-data.json
+@pipeline-review-documentation analisar pipelines/tasks/PROJ-542/.doc-review-data.json
 
 📊 Review de Documentação
-Story: HUB-542
-Documento: docs/HUB-542-technical-documentation.md
+Story: PROJ-542
+Documento: docs/PROJ-542-technical-documentation.md
 Arquivos: 15 | Tasks: 3 | BD: Sim | API: Sim | UI: Sim
 
 🔍 Analisando documentação...

@@ -1,6 +1,6 @@
 # Tests
 
-Testes automatizados para `onze-dev-pipeline`.
+Testes automatizados para `dev-pipeline`.
 
 ## Quick Start
 

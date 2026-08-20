@@ -24,8 +24,8 @@ def resolve_pipeline_key(
     MELHORIA #15: Valida que TASK pertence a STORY quando ambos são fornecidos.
     
     Args:
-        story: Story key fornecido (ex: HUB-542)
-        task: Task key fornecido (ex: HUB-645 ou "NEW")
+        story: Story key fornecido (ex: PROJ-542)
+        task: Task key fornecido (ex: PROJ-645 ou "NEW")
         persistence: PipelineState instance
     
     Returns:
@@ -33,12 +33,12 @@ def resolve_pipeline_key(
         pipeline_type: "story", "task", "new_task", ou "unknown"
     
     Examples:
-        STORY=HUB-542           → ("HUB-542", None, "story")
-        TASK=HUB-645            → ("HUB-542", "HUB-645", "task")  # infere story
-        TASK=HUB-645 avulsa     → (None, "HUB-645", "task")      # sem história
-        STORY=HUB-542 TASK=645  → ("HUB-542", "HUB-645", "task") # valida
+        STORY=PROJ-542           → ("PROJ-542", None, "story")
+        TASK=PROJ-645            → ("PROJ-542", "PROJ-645", "task")  # infere story
+        TASK=PROJ-645 avulsa     → (None, "PROJ-645", "task")      # sem história
+        STORY=PROJ-542 TASK=645  → ("PROJ-542", "PROJ-645", "task") # valida
         TASK=NEW                → (None, "NEW", "new_task")
-        TASK=NEW STORY=HUB-542  → ("HUB-542", "NEW", "new_task")
+        TASK=NEW STORY=PROJ-542  → ("PROJ-542", "NEW", "new_task")
     
     Raises:
         ValueError: Se nenhum fornecido ou se validação falhar
@@ -75,7 +75,7 @@ def resolve_pipeline_key(
     
     # Caso 3: Ambos fornecidos → MELHORIA #15: validar consistência
     if story and task:
-        # Normalizar task: só prefixar se task é número puro (ex: 645 → HUB-645)
+        # Normalizar task: só prefixar se task é número puro (ex: 645 → PROJ-645)
         if task.isdigit():
             task = f"{story.split('-')[0]}-{task}"
         
@@ -106,7 +106,7 @@ def find_story_for_task(task_key: str, persistence: PipelineState) -> str | None
     3. *-pipeline.json (monolítico v1.0) → busca em tasks[]
     
     Args:
-        task_key: HUB-645
+        task_key: PROJ-645
         persistence: PipelineState instance
     
     Returns:

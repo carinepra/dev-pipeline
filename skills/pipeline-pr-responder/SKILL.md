@@ -11,13 +11,13 @@ description: Processa comentários de PR para o Dev Pipeline Orchestrator. Lê `
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -42,7 +42,7 @@ description: Processa comentários de PR para o Dev Pipeline Orchestrator. Lê `
 {PIPELINE_ROOT}/pipelines/tasks/{task_key}/.pr-comments.json
 ```
 
-**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `onze-dev-pipeline/`, partindo do workspace root.
+**REGRA:** O path relativo `pipelines/tasks/...` é relativo ao repo `dev-pipeline/`, partindo do workspace root.
 
 **SEMPRE use o caminho COMPLETO ao chamar a ferramenta Read:**
 ```python
@@ -138,7 +138,7 @@ pr_description = data.get("pr_body", "")
 
 Buscar em `docs/` ou `pipelines/` (stories e tasks) por arquivos relacionados:
 - RFC, spec, plan
-- Grep por issue/ticket number (ex: `HUB-123`)
+- Grep por issue/ticket number (ex: `PROJ-123`)
 
 **Usar esse contexto no Step 2** para identificar comentários que:
 - ❌ Contradizem requisitos explícitos
@@ -266,8 +266,8 @@ if len(data) > MAX_DATA_SIZE:
 #### 4. Comment #459 (reviewer-name — SKIP-OUT-OF-SCOPE)
 **File:** `src/components/OrdersTable.tsx`
 **Issue:** "Add bulk actions back"
-**Reason:** PR description explicitly states: "Removing bulk actions as per product decision HUB-400"
-**Action:** Reply: "This was intentionally removed per HUB-400. Bulk actions will be redesigned in Q2."
+**Reason:** PR description explicitly states: "Removing bulk actions as per product decision PROJ-400"
+**Action:** Reply: "This was intentionally removed per PROJ-400. Bulk actions will be redesigned in Q2."
 
 ## Implementation Plan
 
@@ -314,8 +314,8 @@ if len(data) > MAX_DATA_SIZE:
 ### 4.1 Determinar caminho
 
 ```python
-story_key = "HUB-436"
-task_key = "HUB-437"
+story_key = "PROJ-436"
+task_key = "PROJ-437"
 output_file = f"pipelines/tasks/{task_key}/.pr-response-plan.md"
 ```
 
@@ -331,7 +331,7 @@ Write(
 ### 4.3 Confirmar criação
 
 ```
-✅ Arquivo criado: pipelines/tasks/HUB-437/.pr-response-plan.md
+✅ Arquivo criado: pipelines/tasks/PROJ-437/.pr-response-plan.md
 
 📝 Resumo:
 - 5 VALID (must fix)
@@ -409,7 +409,7 @@ All feedback was positive or already addressed.
 Workflow completo de correção de PR reviews:
 
 ```
-1. @pipeline-pr-responder HUB-645
+1. @pipeline-pr-responder PROJ-645
    → Gera .pr-response-plan.md com avaliação e plano
 
 2. Implementar correções (manualmente ou com AI)
@@ -420,7 +420,7 @@ Workflow completo de correção de PR reviews:
    - Frontend: @pipeline-review-frontend
    → Valida contra padrões do projeto
 
-4. @pipeline-pr-updater HUB-645
+4. @pipeline-pr-updater PROJ-645
    → Commit + push + atualiza descrição do PR
 ```
 

@@ -12,13 +12,13 @@ description: Create branch, commit, push, and open/update GitHub PR for Dev Pipe
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -34,7 +34,7 @@ description: Create branch, commit, push, and open/update GitHub PR for Dev Pipe
 **Diferenças da skill original:**
 - ✅ Integrado com pipeline state (lê task_key, story_key)
 - ✅ Usa convenções de commit do projeto
-- ✅ Cria branch seguindo padrão `<type>/<TASK-KEY>/<user>` (ex: `feat/HUB-655/{user}`)
+- ✅ Cria branch seguindo padrão `<type>/<TASK-KEY>/<user>` (ex: `feat/PROJ-655/{user}`)
 - ✅ Cria PR ou atualiza PR existente
 - ✅ Descrição do PR sempre em PORTUGUÊS (PT-BR)
 - ✅ Output estruturado para o orquestrador
@@ -46,13 +46,13 @@ description: Create branch, commit, push, and open/update GitHub PR for Dev Pipe
 **Formato:** `<type>/<TASK-KEY>/<user>`
 
 - `<type>`: tipo da mudança (`feat`, `fix`, `refactor`, `chore`, `perf`, `test`)
-- `<TASK-KEY>`: código da task Jira (ex: `HUB-655`)
+- `<TASK-KEY>`: código da task Jira (ex: `PROJ-655`)
 - `<user>`: iniciais/username do desenvolvedor (ex: iniciais do nome)
 
 **Exemplos:**
-- `feat/HUB-655/{user}` -- nova feature
-- `fix/HUB-650/{user}` -- bug fix
-- `refactor/HUB-660/{user}` -- refatoração
+- `feat/PROJ-655/{user}` -- nova feature
+- `fix/PROJ-650/{user}` -- bug fix
+- `refactor/PROJ-660/{user}` -- refatoração
 
 **Como determinar o type:**
 - Analise o diff e o contexto da task
@@ -67,7 +67,7 @@ description: Create branch, commit, push, and open/update GitHub PR for Dev Pipe
 ## Input Esperado
 
 Usuário fornece:
-- **TASK** key (ex: `HUB-645`)
+- **TASK** key (ex: `PROJ-645`)
 - Ou contexto atual (branch já está no PR)
 
 O agente deve inferir:
@@ -133,7 +133,7 @@ git config user.name
 
 **Exemplo:**
 ```bash
-git checkout -b feat/HUB-655/{user}
+git checkout -b feat/PROJ-655/{user}
 ```
 
 ---
@@ -173,7 +173,7 @@ git checkout -b feat/HUB-655/{user}
 ⏭️ Excluídos (não serão commitados):
   ?? docs/notas.md
   ?? .cursor/rules/custom.mdc
-  ?? logs/pipeline-HUB-645.log
+  ?? logs/pipeline-PROJ-645.log
 
 Deseja modificar essa lista? (s/N)
 ```
@@ -199,7 +199,7 @@ git diff --staged
 **Identificar:**
 - Natureza das mudanças (fix, feat, refactor, chore)
 - Escopo (module/component principal afetado)
-- Issue key (HUB-XXX) se não tiver no contexto
+- Issue key (PROJ-XXX) se não tiver no contexto
 
 ### Draft Commit Message
 
@@ -223,7 +223,7 @@ git diff --staged
 **Exemplo:**
 
 ```
-fix(order): corrigir validação de inventário (HUB-645)
+fix(order): corrigir validação de inventário (PROJ-645)
 
 - Adicionar tratamento de erro DynamoDB no handler de pedidos
 - Extrair constante MAX_DATA_SIZE para order constants
@@ -235,7 +235,7 @@ fix(order): corrigir validação de inventário (HUB-645)
 
 ```bash
 git commit -m "$(cat <<'EOF'
-fix(order): corrigir validação de inventário (HUB-645)
+fix(order): corrigir validação de inventário (PROJ-645)
 
 - Adicionar tratamento de erro DynamoDB no handler de pedidos
 - Extrair constante MAX_DATA_SIZE para order constants
@@ -314,7 +314,7 @@ EOF
 ```
 📝 Criar PR
 
-Título: feat(order): Adicionar validação de inventário (HUB-655)
+Título: feat(order): Adicionar validação de inventário (PROJ-655)
 
 Descrição:
 ## Resumo
@@ -357,7 +357,7 @@ EOF
 ```
 📝 Atualizar descrição do PR
 
-Título atual: "feat(order): Adicionar validação (HUB-655)"
+Título atual: "feat(order): Adicionar validação (PROJ-655)"
 Corpo atual: (mostrar existente)
 
 Atualização sugerida: (mostrar novo corpo)
@@ -380,17 +380,17 @@ Essa skill é usada na etapa **GIT_PUBLISH** do pipeline:
 
 ```
 1. Pipeline detecta mudanças para publicar
-2. @pipeline-pr-updater HUB-645  →  cria branch + commit + push + PR
+2. @pipeline-pr-updater PROJ-645  →  cria branch + commit + push + PR
 3. Pipeline avança para AGUARDANDO_MERGE
 ```
 
 Também é o **passo natural após** executar `pipeline-pr-responder`:
 
 ```
-1. @pipeline-pr-responder HUB-645  →  gera plano de correções
+1. @pipeline-pr-responder PROJ-645  →  gera plano de correções
 2. (Usuário implementa ou pede implementação)
 3. (Review das mudanças com pipeline-review-backend / pipeline-review-frontend)
-4. @pipeline-pr-updater HUB-645  →  commit + push + atualiza PR
+4. @pipeline-pr-updater PROJ-645  →  commit + push + atualiza PR
 ```
 
 ---

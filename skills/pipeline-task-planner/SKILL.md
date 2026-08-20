@@ -9,13 +9,13 @@ description: Planeja implementação de uma task Jira para o Dev Pipeline Orches
 
 ## 📁 Estrutura de Repositórios (IMPORTANTE)
 
-**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `onze-dev-pipeline` para descobrir repos, paths de docs e projeto atual.
+**📋 Config:** Leia `.pipeline-config.json` na raiz do repo `dev-pipeline` para descobrir repos, paths de docs e projeto atual.
 
 **Contextos de uso:**
 
 ### Quando chamada pelo ORQUESTRADOR (Pipeline):
 - **Working directory:** o workspace root do Cursor (diretório raiz com todos os repos)
-- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo onze-dev-pipeline (contem .pipeline-config.json)
+- **Variáveis de template:** `{WORKSPACE_ROOT}` = pasta pai dos repos | `{PIPELINE_ROOT}` = repo dev-pipeline (contem .pipeline-config.json)
 - **Repositórios disponíveis como subdiretórios:**
   - Consulte `repositories` em `.pipeline-config.json` para paths dos repos
   - Cada repo tem `local_path`, `type` e `tech_stack`
@@ -117,8 +117,8 @@ Antes de gerar o plano, perguntar a si mesmo:
 ## Input Esperado
 
 O orquestrador já forneceu:
-- **Task key**: `HUB-437` (subtask a planejar)
-- **Story key**: `HUB-436` (parent)
+- **Task key**: `PROJ-437` (subtask a planejar)
+- **Story key**: `PROJ-436` (parent)
 - **Task data**: Summary, description (já fetched ou do breakdown)
 
 **Não** pedir essas informações novamente.
@@ -167,12 +167,12 @@ Se MCP falhar:
 source ~/.zshrc && python3 ~/.cursor/skills/skill-jira-task-creator/query_issues.py
 ```
 
-Com `QUERY = {"type": "issue", "key": "HUB-437"}`.
+Com `QUERY = {"type": "issue", "key": "PROJ-437"}`.
 
 **Mostrar resumo:**
 ```
-📋 Task: HUB-437
-Parent: HUB-436
+📋 Task: PROJ-437
+Parent: PROJ-436
 Summary: [Portal] Adicionar hr_modify_employee ao NewMovementDrawer
 Component: Front
 
@@ -240,8 +240,8 @@ from pathlib import Path
 config = json.loads(Path(".pipeline-config.json").read_text())
 
 # Identificar o repo pelo escopo/componente da task
-# (ex: componente "Back" → firebolt-backend; ler component_repo_map do projeto)
-project_key = story_key.split("-")[0]  # ex: "HUB"
+# (ex: componente "Back" → white-backend; ler component_repo_map do projeto)
+project_key = story_key.split("-")[0]  # ex: "PROJ"
 project_config = config["jira"]["projects"].get(project_key, {})
 component_map = project_config.get("component_repo_map", {})
 repo_id = component_map.get(task_component, None)  # task_component = "Back", "Infra", etc.
@@ -397,15 +397,15 @@ else:
 ### 6.1 Determinar caminho do arquivo
 
 ```python
-story_key = "HUB-436"  # Parent story
-task_key = "HUB-437"   # Subtask atual
+story_key = "PROJ-436"  # Parent story
+task_key = "PROJ-437"   # Subtask atual
 output_dir = f"pipelines/tasks/{task_key}"
 output_file = f"{output_dir}/.plan.md"
 ```
 
-**No repo `onze-dev-pipeline`**, criar:
+**No repo `dev-pipeline`**, criar:
 ```
-pipelines/tasks/HUB-437/.plan.md
+pipelines/tasks/PROJ-437/.plan.md
 ```
 
 ### 6.2 Estrutura do Plano
@@ -416,8 +416,8 @@ pipelines/tasks/HUB-437/.plan.md
 # [Nome da feature/task]
 
 ## Contexto
-- **Task Jira:** HUB-437 — [Portal] Adicionar hr_modify_employee ao NewMovementDrawer
-- **Parent Story:** HUB-436 — Implementar fluxo completo de hr_modify
+- **Task Jira:** PROJ-437 — [Portal] Adicionar hr_modify_employee ao NewMovementDrawer
+- **Parent Story:** PROJ-436 — Implementar fluxo completo de hr_modify
 - **Design Figma:** [link ou N/A]
 - **Component:** Front
 - **Priority:** Highest
@@ -581,7 +581,7 @@ test('submete hr_modify_employee corretamente', async () => {
 ## Dependências
 
 ### Blocking
-- **HUB-435** (Backend endpoint) — precisa estar implementado antes
+- **PROJ-435** (Backend endpoint) — precisa estar implementado antes
 
 ### External
 - API endpoint `/orders/hr_modify_employee` funcional
@@ -807,12 +807,12 @@ Write(
 Após criar o arquivo, **SEMPRE** informar ao usuário:
 
 ```
-✅ Arquivo criado: pipelines/tasks/HUB-437/.plan.md
+✅ Arquivo criado: pipelines/tasks/PROJ-437/.plan.md
 
 📋 Plano:
 - Escopo: 5 arquivos afetados
 - Abordagem: Reusar padrão hr_new_employee
-- Dependências: HUB-435 (backend endpoint)
+- Dependências: PROJ-435 (backend endpoint)
 
 Pressione qualquer tecla para o pipeline continuar...
 ```
@@ -856,7 +856,7 @@ Antes de gerar o plano, validar:
 **Solução:**
 1. Verificar se `Write` tool foi executado
 2. Confirmar path: `pipelines/tasks/{task_key}/.plan.md`
-3. Testar: `ls -la pipelines/tasks/HUB-436/`
+3. Testar: `ls -la pipelines/tasks/PROJ-436/`
 
 ### "Plano muito genérico"
 
